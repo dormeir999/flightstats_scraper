@@ -87,8 +87,12 @@ print(flights_list)
 
 # order the flights_list in 4 memebers unit list
 
-#todo: use selenium package to autuomate pagniation
-'''
+#todo: 1. format as nested list, each list member contains all data on one flight
+#todo: 2. implement the list of airports to the script, and an option to choose airports specifically
+#todo: 3. adhere to the convesion, docstring
+#todo: 4. use selenium package to autuomate pagniation
+#todo: 5.get extra data from specific flight page
+
 # all the links of the page
 for link in soup.find_all('a'):
     print(link.get('href'))
@@ -97,4 +101,3 @@ for link in soup.find_all('a'):
 for link in list(soup.children)[1].find_all('a'):
     print(link.get('href'))
 
-'''
