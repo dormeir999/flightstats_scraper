@@ -30,7 +30,7 @@ soup = BeautifulSoup(page.content, 'html.parser')
 
 
 # select all the elements at the top level of the page
-#print(list(soup.children))
+list(soup.children)
 
 # Let’s see what the type of each element in the list is:
 #[type(item) for item in list(soup.children)]
@@ -39,18 +39,49 @@ soup = BeautifulSoup(page.content, 'html.parser')
 html = list(soup.children)[1]
 
 # Now, we can find the children inside the html tag:
-#print(list(html.children))
+# print(list(html.children))
 
 # we want to extract the text of flights, so we’ll dive into the body, which is the second (out of 2) tags:
 body = list(html.children)[1]
 
 # Now, we can get the children of the body tag:
-list(body.children)
+# list(body.children)
 
 # There are 8 children:
-print(len(list(body.children)))
+#print(len(list(body.children)))
+
+# This child contains the actual data:
+#print(list(body.children)[3])
 
 # This child contains the next page:
+#print(list(body.children)[4])
 
-# This child contains the next page:
-print(list(body.children)[4])
+# This child contains the error page:
+#print(list(body.children)[6])
+
+# We can now isolate the actual data page:
+flights_data = list(body.children)[3]
+
+#flights_data.children)
+
+# The closes I got to flights data
+print(list(list(soup.children)[1].children)[1])
+
+print(list(list(soup.children)[1].children)[1].find_all('span', class_="table__SubText-s1x7nv9w-16 fRijCQ"))
+
+# The table of flights:
+list(list(soup.children)[1].children)[1].find_all('div', class_="table__TableContainer-s1x7nv9w-5 jfmExz")
+
+list(list(soup.children)[1].children)[1].find_all('div', class_="table__Table-s1x7nv9w-6 iiiADv")
+
+
+list(list(soup.children)[1].children)[1].find_all('h2')
+
+# The flights!
+list(soup.children)[1].find_all('h2')
+
+# The number of pages!
+list(soup.children)[1].find_all('span')
+
+# header
+list(soup.children)[1].find_all('h1')
