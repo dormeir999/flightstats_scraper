@@ -7,9 +7,9 @@ import requests
 #response = requests.get('https://www.flightradar24.com/30.9,31.95/5')
 #print(response.status_code)
 
-import wget
+#import wget
 import requests
-import json
+#import json
 myProxy = {"http"  : "http://10.120.118.49:8080", "https"  : "https://10.120.118.49:8080"}
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"}
 url = 'https://www.flightstats.com/v2/flight-tracker/departures/zrh'
@@ -21,12 +21,12 @@ print(r.content)
 # Command from: https://www.dataquest.io/blog/web-scraping-tutorial-python/
 
 page = requests.get(url)
-page
-page.content
+print(page)
+#print(page.content)
 
 from bs4 import BeautifulSoup
 soup = BeautifulSoup(page.content, 'html.parser')
-
+print(soup.prettify())
 
 '''
 
