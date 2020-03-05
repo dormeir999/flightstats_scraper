@@ -16,79 +16,41 @@ url = 'https://www.flightstats.com/v2/flight-tracker/departures/zrh'
 
 s = requests.session()
 r = s.get(url)#, proxies = myProxy, headers = headers)
-print(r.content)
+#print(r.content)
 
 # Command from: https://www.dataquest.io/blog/web-scraping-tutorial-python/
 
 page = requests.get(url)
-print(page)
+#print(page)
 #print(page.content)
 
 from bs4 import BeautifulSoup
 soup = BeautifulSoup(page.content, 'html.parser')
-print(soup.prettify())
-
-'''
-
-filename = wget.download(url)
-print(filename)
-
-import urllib.request, urllib.error, urllib.parse
-
-url = 'https://www.flightradar24.com/30.9,31.95/5'
-
-response = urllib.request.urlopen(url)
-webContent = response.read()
-
-print(webContent[0:300])
-'''
-'''
-metacount = 0
+#print(soup.prettify())
 
 
-class MyHTMLParser(HTMLParser):
-    def handle_comment(self, data):
-        print("Encountered comment: ", data)
-        pos = self.getpos()
-        print("\tAt line:", pos[0], " position ", pos[1])
+# select all the elements at the top level of the page
+#print(list(soup.children))
 
-    def handle_starttag(self, tag, attrs):
-        global metacount
-        if tag == "meta":
-            metacount += 1
+# Let’s see what the type of each element in the list is:
+#[type(item) for item in list(soup.children)]
 
-        print("Encountered a start tag: ", tag)
-        pos = self.getpos()
-        print("\tAt line:", pos[0], " position ", pos[1])
+#We can now select the html tag and its children by taking the third item in the list:
+html = list(soup.children)[1]
 
-        if attrs.__len__() > 0:
-            print("\tAttributes:")
-            for a in attrs:
-                print("\t", a[0], "=", a[1])
+# Now, we can find the children inside the html tag:
+#print(list(html.children))
 
-    def handle_endtag(self, tag):
-        print("Encountered tag: ", tag)
-        pos = self.getpos()
-        print("\tAt line:", pos[0], " position ", pos[1])
+# we want to extract the text of flights, so we’ll dive into the body, which is the second (out of 2) tags:
+body = list(html.children)[1]
 
-    def handle_data(self, data):
-        if (data.isspace()):
-            return
-        print("Encountered data: ", data)
-        pos = self.getpos()
-        print("\tAt line:", pos[0], " position ", pos[1])
+# Now, we can get the children of the body tag:
+list(body.children)
 
+# There are 8 children:
+print(len(list(body.children)))
 
-def main():
-    # instantiate the parser and feed it some HTML
-    parser = MyHTMLParser()
-    f = open("samplehtml.html")
-    if f.mode == 'r':
-        contents = f.read()
-        parser.feed(contents)
-        print("%d Meta tags found: " % metacount)
+# This child contains the next page:
 
-
-if __name__ == "__main__":
-    main();
-'''
+# This child contains the next page:
+print(list(body.children)[4])
