@@ -1,19 +1,10 @@
-#
-# Example file for parsing and processing HTML
-#
-from html.parser import HTMLParser
-import requests
 
-#response = requests.get('https://www.flightradar24.com/30.9,31.95/5')
-#print(response.status_code)
-
-#import wget
 import requests
-#import json
-myProxy = {"http"  : "http://10.120.118.49:8080", "https"  : "https://10.120.118.49:8080"}
-headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"}
+from bs4 import BeautifulSoup
+
+
 url = 'https://www.flightstats.com/v2/flight-tracker/departures/zrh'
-
+#url = 'https://www.flightstats.com/v2/flight-tracker/BA/709?year=2020&month=3&date=5&flightId=1033081792'
 s = requests.session()
 r = s.get(url)#, proxies = myProxy, headers = headers)
 #print(r.content)
@@ -24,7 +15,6 @@ page = requests.get(url)
 #print(page)
 #print(page.content)
 
-from bs4 import BeautifulSoup
 soup = BeautifulSoup(page.content, 'html.parser')
 #print(soup.prettify())
 
@@ -77,11 +67,37 @@ list(list(soup.children)[1].children)[1].find_all('div', class_="table__Table-s1
 
 list(list(soup.children)[1].children)[1].find_all('h2')
 
-# The flights!
-list(soup.children)[1].find_all('h2')
 
 # The number of pages!
 list(soup.children)[1].find_all('span')
 
 # header
 list(soup.children)[1].find_all('h1')
+
+# The flights!
+list(soup.children)[1].find_all('h2')
+list(soup.children)[1].select('h2')
+flights = list(soup.children)[1].select('h2')
+flights_list = [flight.get_text() for flight in flights]
+
+# The actual flights!
+flights_list = [flight.get_text() for flight in flights]
+
+print(flights_list)
+
+# order the flights_list in 4 memebers unit list
+
+#todo: 1. format as nested list, each list member contains all data on one flight
+#todo: 2. implement the list of airports to the script, and an option to choose airports specifically
+#todo: 3. adhere to the convesion, docstring
+#todo: 4. use selenium package to autuomate pagniation
+#todo: 5.get extra data from specific flight page
+
+# all the links of the page
+for link in soup.find_all('a'):
+    print(link.get('href'))
+
+# get flights links (and ids)
+for link in list(soup.children)[1].find_all('a'):
+    print(link.get('href'))
+
