@@ -2,7 +2,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-test send to branch
+
 
 url = 'https://www.flightstats.com/v2/flight-tracker/departures/zrh'
 #url = 'https://www.flightstats.com/v2/flight-tracker/BA/709?year=2020&month=3&date=5&flightId=1033081792'
