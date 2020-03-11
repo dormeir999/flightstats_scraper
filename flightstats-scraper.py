@@ -122,7 +122,13 @@ for link in links:
         flight_links.append(str(SITE_BASIC_PATH) + str(details_link))
         print(str(SITE_BASIC_PATH) + str(details_link))
 
+flights_html = []
+flights_body = []
+flights_body_detail_h4 = []
+flight_historical_time_hours = []
 flights_data = []
+flights_data_lower_level = []
+flights_data_even_lower_level = []
 flights_all_strings = []
 for link in flight_links:
     url = link
@@ -131,7 +137,13 @@ for link in flight_links:
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
     html = list(soup.children)[1]
+    flights_html.append(html)
     body = list(html.children)[1]
+    flights_body.append(body)
+    flights_body_detail_h4.append(list(flights_body[0].find_all('h4', class_="detail")))
+    flight_historical_time_hours.append(list(flights_body[0].find_all('span', class_="historical-flight-time-hours")))
     flights_data.append(body.get_text())  # one liner of all data on flight, including flight note
+    flights_data_lower_level.append(list(body.children)[1].get_text())
+    flights_data_even_lower_level.append(list(list(body.children)[1].children)[0])
     #flights_all_strings.append(list(body._all_strings()))  # just the strings
     #print(body.get_text().split("}"))  # the data splitted into fields (probably can ignore path and name
