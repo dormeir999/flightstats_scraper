@@ -86,7 +86,7 @@ list(soup.children)[1].find_all('h1')
 list(soup.children)[1].find_all('h2')
 list(soup.children)[1].select('h2')
 flights = list(soup.children)[1].select('h2')
-flights_list = [flight.get_text() for flight in flights]
+flights_list_Number_Departime_Arrivetime_Dest = [flight.get_text() for flight in flights]
 
 # The actual flights!
 flights_list = [flight.get_text() for flight in flights]
@@ -140,10 +140,51 @@ for link in flight_links:
     flights_html.append(html)
     body = list(html.children)[1]
     flights_body.append(body)
-    flights_body_detail_h4.append(list(flights_body[0].find_all('h4', class_="detail")))
-    flight_historical_time_hours.append(list(flights_body[0].find_all('span', class_="historical-flight-time-hours")))
+#    flights_body_detail_h4.append(list(flights_body[0]`.find_all('h4', class_="detail"))
+#    flight_historical_time_hours.append(list(flights_body[0].find_all('span', class_="historical-flight-time-hours")))
     flights_data.append(body.get_text())  # one liner of all data on flight, including flight note
     flights_data_lower_level.append(list(body.children)[1].get_text())
     flights_data_even_lower_level.append(list(list(body.children)[1].children)[0])
     #flights_all_strings.append(list(body._all_strings()))  # just the strings
     #print(body.get_text().split("}"))  # the data splitted into fields (probably can ignore path and name
+
+#todo:
+airport_all_flights_data = []
+
+
+#todo:
+flight_details_list = []
+flight_name = soup.find("h1").string
+flight_status = soup.find("p").string
+departure_airport = soup.find_all("h2")[1].string
+arrival_airport = soup.find_all("h2")[3].string
+departure_date = soup.find_all("p")[3].string
+arrival_date = soup.find_all("p")[26].string
+operating_airline = soup.find_all("p")[48].string
+flight_details_list.append([flight_name, flight_status, departure_airport, arrival_airport, departure_date, arrival_date, operating_airline])
+
+#todo:
+flight_events_Date_Time_MSG = []
+a = soup.find_all('p', class_='rowData')
+string_before=""
+time_iter = -1
+for i, b in enumerate(a):
+    if b.string is None:  # empty cell
+        continue
+    elif ":" in b.string:  # is time
+        string_before = b.string
+        time_iter += 1
+        if time_iter % 3 == 0:  # is UTC time
+            counter += 1
+            flight_events_Date_Time_MSG.append(b.string)
+        else:
+            continue
+    elif ":" in string_before:  # is event message
+        string_before = b.string
+        flight_events_Date_Time_MSG.append(b.string)
+    elif len(b.string.split(" ")[1]) == 3:  # is date (len 3 is month short name)
+        string_before = b.string
+        flight_events_Date_Time_MSG.append(b.string)
+
+# for flight in flights:
+specific_airport_flights_data.append([flights_list_Number_Departime_Arrivetime_Dest[1:5], flight_details_list, flight_events_Date_Time_MSG])
