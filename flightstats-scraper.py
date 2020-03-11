@@ -1,7 +1,24 @@
 
 import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
+elm = driver.find_element_by_class_name('cKpakR')
+elm.click()
+
+from selenium import webdriver
+
+
+# options = webdriver.ChromeOptions()
+# options.add_argument('--ignore-certificate-errors')
+# options.add_argument("--test-type")
+# options.binary_location = "/usr/bin/chromium"
+driver = webdriver.Chrome(chrome_options=options)
+driver.get(url)
+
+html = driver.page_source
+print(html)
 
 
 url = 'https://www.flightstats.com/v2/flight-tracker/departures/zrh'

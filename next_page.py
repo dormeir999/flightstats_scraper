@@ -26,7 +26,7 @@ def collect_flight_links(url):
             driver.execute_script("return arguments[0].scrollIntoView(true);", WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"__next\"]/div/section/div/div[2]/div[1]/div[3]/div/div/div[16]/span"))))
             driver.find_element_by_xpath("//*[@id=\"__next\"]/div/section/div/div[2]/div[1]/div[3]/div/div/div[16]/span").click()
 
-            #todo: get and parse html
+            #todo: get links function
 
         except (TimeoutException, WebDriverException):
             break
