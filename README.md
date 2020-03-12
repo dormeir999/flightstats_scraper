@@ -29,6 +29,10 @@ Airport data was taken from: https://ourairports.com/data/airports.csv"
 
 ### Deployment: ###
 
-The airpot data need to be inputed as the first argument
+The airpot data csv file needs to be inputed as the first argument.
 
+### Testing: ###
+
+Before performing the scrape the scraper will first try to fetch the recent flights from the Hartsfield–Jackson Atlanta International Airport - The busiest airport in the world. 
+If this succeeds, it will move on to scraping the supplied airport data csv file.
 
