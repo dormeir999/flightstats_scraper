@@ -2,7 +2,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-# test flight_info branch
+test send to branch
 
 url = 'https://www.flightstats.com/v2/flight-tracker/departures/zrh'
 #url = 'https://www.flightstats.com/v2/flight-tracker/BA/709?year=2020&month=3&date=5&flightId=1033081792'
@@ -92,7 +92,7 @@ print(flights_list)
 #todo: 2. implement the list of airports to the script, and an option to choose airports specifically
 #todo: 3. adhere to the convesion, docstring
 #todo: 4. use selenium package to autuomate pagniation
-#todo: 5. get extra data from specific flight page
+#todo: 5.get extra data from specific flight page
 
 # all the links of the page
 for link in soup.find_all('a'):
