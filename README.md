@@ -31,7 +31,8 @@ Airport data was taken from: https://ourairports.com/data/airports.csv"
 
 ### Deployment: ###
 
-Run flightstats-scraper.py with the airpot data csv file as argument.
+Run flightstats-scraper.py with the airpot data csv file as argument:
+python3 flightstats-scraper.py airports.csv
 
 ### Testing: ###
 
