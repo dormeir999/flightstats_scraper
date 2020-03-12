@@ -4,26 +4,24 @@ This README would normally document whatever steps are necessary to get your app
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* Flightstats_scaper is a webscraper that collects departure and flight data from big and medium airports around the world form the https://www.flightstats.com/ website.
 
-### How do I get set up? ###
+* Version 1.3
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+### Requierments: ###
 
-### Contribution guidelines ###
+Python Libaries:
+* selenium
+* bs4 (BeautifulSoup)
+* requests
+* re
 
-* Writing tests
-* Code review
-* Other guidelines
+Data:
+Airport data was taken from: https://ourairports.com/data/airports.csv"
 
-### Who do I talk to? ###
 
-* Repo owner or admin
-* Other community or team contact
+### Deployment: ###
+
+The airpot data need to be inputed as the first argument
+
+
