@@ -16,6 +16,11 @@ Python Libaries:
 * requests
 * re
 
+Webbrowser:
+The program uses Chrome as a browser. For Selenium to work a WebDriver needs to be intalled:
+Instructions: https://selenium-python.readthedocs.io/installation.html
+Download: https://sites.google.com/a/chromium.org/chromedriver/downloads
+
 Data:
 Airport data was taken from: https://ourairports.com/data/airports.csv"
 
