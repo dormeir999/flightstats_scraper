@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 # test flight_info branch
 
-url = 'https://www.flightst ats.com/v2/flight-tracker/departures/zrh'
+url = 'https://www.flightstats.com/v2/flight-tracker/departures/zrh'
 #url = 'https://www.flightstats.com/v2/flight-tracker/BA/709?year=2020&month=3&date=5&flightId=1033081792'
 s = requests.session()
 r = s.get(url)#, proxies = myProxy, headers = headers)
