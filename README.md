@@ -15,6 +15,8 @@ Python Libaries:
 * bs4 (BeautifulSoup)
 * requests
 * re
+* csv
+* sys
 
 Webbrowser:
 The program uses Chrome as a browser. For Selenium to work a WebDriver needs to be intalled:
