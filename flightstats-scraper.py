@@ -20,6 +20,7 @@ LINK_STRING = 'href'
 
 url = str(URL_FLIGHT_DEPT) + str(list_of_airports[0])
 SITE_BASIC_PATH = url.split(URL_SPLIT_STRING)[0]
+=
 s = requests.session()
 r = s.get(url)
 page = requests.get(url)
