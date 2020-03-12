@@ -10,6 +10,8 @@ This README would normally document whatever steps are necessary to get your app
 
 ### Requierments: ###
 
+* Python 3
+
 Python Libaries:
 * selenium
 * bs4 (BeautifulSoup)
@@ -29,7 +31,7 @@ Airport data was taken from: https://ourairports.com/data/airports.csv"
 
 ### Deployment: ###
 
-The airpot data csv file needs to be inputed as the first argument.
+Run flightstats-scraper.py with the airpot data csv file as argument.
 
 ### Testing: ###
 
