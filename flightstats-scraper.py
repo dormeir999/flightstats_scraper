@@ -1,121 +1,93 @@
 
 import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+import re
 
-elm = driver.find_element_by_class_name('cKpakR')
-elm.click()
+SPECIFIC_FLIGHT_IDENTIFIER = "flightId"
+FLIGHT_INFO_TAG = "flight-details"
+FLIGHT_TRACK_TAG = "flight-tracker"
+URL_SPLIT_STRING = "/v2"
+URL_FLIGHT_DEPT = 'https://www.flightstats.com/v2/flight-tracker/departures/'
+list_of_airports = ['zrh','tlv']
+HTML_PARSER_STRING = 'html.parser'
+FLIGHT_TRACKER_STRING = 'h2'
+FLIGHT_NAME_STRING = "h1"
+FLIGHT_STAT_STRING = "p"
+AIRPORT_DEPT_STRING = "h2"
+FLIGHTS_EVENTS_STRING = 'rowData'
+FLIGHT_LINK_STRING = 'a'
+LINK_STRING = 'href'
 
-from selenium import webdriver
-
-
-# options = webdriver.ChromeOptions()
-# options.add_argument('--ignore-certificate-errors')
-# options.add_argument("--test-type")
-# options.binary_location = "/usr/bin/chromium"
-driver = webdriver.Chrome(chrome_options=options)
-driver.get(url)
-
-html = driver.page_source
-print(html)
-
-
-url = 'https://www.flightstats.com/v2/flight-tracker/departures/zrh'
-#url = 'https://www.flightstats.com/v2/flight-tracker/BA/709?year=2020&month=3&date=5&flightId=1033081792'
+url = str(URL_FLIGHT_DEPT) + str(list_of_airports[0])
+SITE_BASIC_PATH = url.split(URL_SPLIT_STRING)[0]
+=
 s = requests.session()
-r = s.get(url)#, proxies = myProxy, headers = headers)
-#print(r.content)
-
-# Command from: https://www.dataquest.io/blog/web-scraping-tutorial-python/
-
+r = s.get(url)
 page = requests.get(url)
-#print(page)
-#print(page.content)
+soup = BeautifulSoup(page.content, HTML_PARSER_STRING)
+flights = list(soup.children)[1].select(FLIGHT_TRACKER_STRING)
 
-soup = BeautifulSoup(page.content, 'html.parser')
-#print(soup.prettify())
+flights_list_Number_Departime_Arrivetime_Dest = []
+for flight in flights:
+    flights_list_Number_Departime_Arrivetime_Dest.append(flight.get_text())
 
-
-# select all the elements at the top level of the page
-list(soup.children)
-
-# Let’s see what the type of each element in the list is:
-#[type(item) for item in list(soup.children)]
-
-#We can now select the html tag and its children by taking the third item in the list:
-html = list(soup.children)[1]
-
-# Now, we can find the children inside the html tag:
-# print(list(html.children))
-
-# we want to extract the text of flights, so we’ll dive into the body, which is the second (out of 2) tags:
-body = list(html.children)[1]
-
-# Now, we can get the children of the body tag:
-# list(body.children)
-
-# There are 8 children:
-#print(len(list(body.children)))
-
-# This child contains the actual data:
-#print(list(body.children)[3])
-
-# This child contains the next page:
-#print(list(body.children)[4])
-
-# This child contains the error page:
-#print(list(body.children)[6])
-
-# We can now isolate the actual data page:
-flights_data = list(body.children)[3]
-
-#flights_data.children)
-
-# The closes I got to flights data
-print(list(list(soup.children)[1].children)[1])
-
-print(list(list(soup.children)[1].children)[1].find_all('span', class_="table__SubText-s1x7nv9w-16 fRijCQ"))
-
-# The table of flights:
-list(list(soup.children)[1].children)[1].find_all('div', class_="table__TableContainer-s1x7nv9w-5 jfmExz")
-
-list(list(soup.children)[1].children)[1].find_all('div', class_="table__Table-s1x7nv9w-6 iiiADv")
+print("get flights links (and ids):")
+links = []
+flight_links = []
+for link in list(soup.children)[1].find_all(FLIGHT_LINK_STRING):
+        links.append(str(link.get(LINK_STRING)))
+        print(str(link.get(LINK_STRING)))
 
 
-list(list(soup.children)[1].children)[1].find_all('h2')
+
+for link in links:
+    if re.findall(SPECIFIC_FLIGHT_IDENTIFIER, link):
+        details_link = re.sub(FLIGHT_TRACK_TAG, FLIGHT_INFO_TAG, link)
+        flight_links.append(str(SITE_BASIC_PATH) + str(details_link))
+        print(str(SITE_BASIC_PATH) + str(details_link))
+
+for link in flight_links:
+    url = link
+    s = requests.session()
+    r = s.get(url)
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, HTML_PARSER_STRING)
+    flight_details_list = []
+    flight_name = soup.find(FLIGHT_NAME_STRING).string
+    flight_status = soup.find(FLIGHT_STAT_STRING).string
+    departure_airport = soup.find_all(AIRPORT_DEPT_STRING)[1].string
+    arrival_airport = soup.find_all(AIRPORT_DEPT_STRING)[3].string
+    departure_date = soup.find_all(FLIGHT_STAT_STRING)[3].string
+    arrival_date = soup.find_all(FLIGHT_STAT_STRING)[26].string
+    operating_airline = soup.find_all(FLIGHT_STAT_STRING)[48].string
+    flight_details_list.append([flight_name, flight_status, departure_airport, arrival_airport, departure_date, arrival_date, operating_airline])
+
+    flight_events_Date_Time_MSG = []
+    a = soup.find_all(FLIGHT_STAT_STRING, class_=FLIGHTS_EVENTS_STRING)
+    string_before = ""
+    time_iter = -1
+    for i, b in enumerate(a):
+        if b.string is None:  # empty cell
+            continue
+        elif ":" in b.string:  # is time
+            string_before = b.string
+            time_iter += 1
+            if time_iter % 3 == 0:  # is UTC time
+                flight_events_Date_Time_MSG.append(b.string)
+            else:
+                continue
+        elif ":" in string_before:  # is event message
+            string_before = b.string
+            flight_events_Date_Time_MSG.append(b.string)
+        elif len(b.string.split(" ")[1]) == 3:  # is date (len 3 is month short name)
+            string_before = b.string
+            flight_events_Date_Time_MSG.append(b.string)
+
+    specific_airport_flights_data = []
+    for i, flight in enumerate(flight_details_list):
+        specific_airport_flights_data.append([flights_list_Number_Departime_Arrivetime_Dest[i], flight_details_list[i], flight_events_Date_Time_MSG])
+        print(specific_airport_flights_data[i])
 
 
-# The number of pages!
-list(soup.children)[1].find_all('span')
 
-# header
-list(soup.children)[1].find_all('h1')
-
-# The flights!
-list(soup.children)[1].find_all('h2')
-list(soup.children)[1].select('h2')
-flights = list(soup.children)[1].select('h2')
-flights_list = [flight.get_text() for flight in flights]
-
-# The actual flights!
-flights_list = [flight.get_text() for flight in flights]
-
-print(flights_list)
-
-# order the flights_list in 4 memebers unit list
-
-#todo: 1. format as nested list, each list member contains all data on one flight
-#todo: 2. implement the list of airports to the script, and an option to choose airports specifically
-#todo: 3. adhere to the convesion, docstring
-#todo: 4. use selenium package to autuomate pagniation
-#todo: 5.get extra data from specific flight page
-
-# all the links of the page
-for link in soup.find_all('a'):
-    print(link.get('href'))
-
-# get flights links (and ids)
-for link in list(soup.children)[1].find_all('a'):
-    print(link.get('href'))
 
