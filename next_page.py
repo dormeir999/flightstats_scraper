@@ -18,13 +18,16 @@ def collect_flight_links(url):
     """This function collects links of each flight from the airport specific web page"""
 
     num_pages = get_number_of_pages(url)
+    html_list = []
+    driver = webdriver.Chrome()
+    driver.get(url)
+    if num_pages == 0:
+        return html_list, num_pages  #.append(driver.page_source)
     div_num_next = str(num_pages + 3)
     xpath_next = "//*[@id=\"__next\"]/div/section/div/div[2]/div[1]/div[3]/div/div/div[" + div_num_next + "]/span"
     ex_script_scroll = "return arguments[0].scrollIntoView(true);"
-    driver = webdriver.Chrome()
-    driver.get(url)
+
     count = 0
-    html_list = []
 
     # this loop clicks through the flights by clicking on the next button
     # and collects all the flight specific links until reaching the last page
@@ -38,19 +41,21 @@ def collect_flight_links(url):
         except (TimeoutException, WebDriverException):
             break
 
-    return html_list
+    return html_list, num_pages
 
 def get_number_of_pages(url):
     """gets the number of pages on the airport departure website"""
 
     soup = BeautifulSoup(requests.get(url).content, 'html.parser')
     paginations = soup.select("span", class_="pagination__PageNavigation-s1515b5x-3 cKpakR")
+
     page_number_paginations = []
     for b in paginations:
         if b.get_text().isnumeric():
             page_number_paginations.append(b.get_text())
+    if len(page_number_paginations) == 0:
+        return 0
     number_of_pages = int(page_number_paginations[-1])
-
     return number_of_pages
 
 

@@ -61,7 +61,9 @@ def get_html_links(soup):
     :return: the list of links in the html page (both flight and non flight links
     """
     # Get all the html's links, including the detailed websites on flights links
-    unparsed_list_of_links = list(soup.children)[1].find_all(HTML_LINKS_STR1)
+    if only_one_page == True:
+        unparsed_list_of_links = list(soup.children)[0].find_all(HTML_LINKS_STR1)
+    unparsed_list_of_links = list(soup.children)[0].find_all(HTML_LINKS_STR1)
     return [str(link.get(HTML_LINKS_STR2)) for link in unparsed_list_of_links]
 
 
@@ -76,17 +78,22 @@ def get_flights_links(airport):
     url = str(URL_FLIGHT_DEPT) + str(airport)
     SITE_BASIC_PATH = url.split(URL_SPLIT_STR)[0]
     page = requests.get(url)
-    # todo: insert pagination function, returns list of htmls of pages from the airport
 
     html_list = collect_flight_links(url)
-    print(html_list)
-    print(len(html_list))
+
 
     # Get all the html's links, including the detailed websites on flights links
+    if html_list is None:
+        links = get_html_links(BeautifulSoup(page.content, HTML_PARSER_STR))
+        flight_links = filter_flights_links(links, SITE_BASIC_PATH)
+        only_one_page = True
+        return flight_links, only_one_page
+
     links = [get_html_links(BeautifulSoup(html, HTML_PARSER_STR)) for html in html_list]
+    flat_links = [item for sublist in links for item in sublist]
 
     # filter links for only the details about the flights links:
-    flight_links = filter_flights_links(links, SITE_BASIC_PATH)
+    flight_links = filter_flights_links(flat_links, SITE_BASIC_PATH)
     print(flight_links)
 
     return flight_links
@@ -150,6 +157,9 @@ def get_flights_data(flight_links):
     :param flight_links: a list of hyperlinks for the details of the departing flights
     :return: flights_data: a list of tuples, each tuple combines both flights details and flights events
     """
+
+    if flight_links is None:
+        return "No recent flights!"
     flight_details, flight_events = [], []
 
     for flight_link in flight_links:
