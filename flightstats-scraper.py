@@ -11,6 +11,7 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 import re
+from next_page import collect_flight_links, get_number_of_pages
 
 # Constants
 SPECIFIC_FLIGHT_IDENTIFIER = "flightId"
@@ -76,14 +77,18 @@ def get_flights_links(airport):
     SITE_BASIC_PATH = url.split(URL_SPLIT_STR)[0]
     page = requests.get(url)
     # todo: insert pagination function, returns list of htmls of pages from the airport
-    soup = BeautifulSoup(page.content, HTML_PARSER_STR)  # The html Parser
+
+    html_list = collect_flight_links(url)
+    print(html_list)
+    print(len(html_list))
 
     # Get all the html's links, including the detailed websites on flights links
-    links = get_html_links(soup)
+    links = [get_html_links(BeautifulSoup(html, HTML_PARSER_STR)) for html in html_list]
 
     # filter links for only the details about the flights links:
     flight_links = filter_flights_links(links, SITE_BASIC_PATH)
     print(flight_links)
+
     return flight_links
 
 
