@@ -65,13 +65,17 @@ def get_flights_links(airport):
     url = str(URL_FLIGHT_DEPT) + str(airport)
     SITE_BASIC_PATH = url.split(URL_SPLIT_STR)[0]
     page = requests.get(url)
+    # todo: insert pagination function, returns list of htmls of pages from the airport
+
     soup = BeautifulSoup(page.content, HTML_PARSER_STR)  # The html Parser
 
+    # todo:create a function for this, return a list of links:
     # Get all the html's links, including the detailed websites on flights links
     links = []
     for link in list(soup.children)[1].find_all(HTML_LINKS_STR1):
-            links.append(str(link.get(HTML_LINKS_STR2)))
+        links.append(str(link.get(HTML_LINKS_STR2)))
 
+    # todo:package filter_flight_links, get links return flight links
     # filter links for only the details about the flights links:
     flight_links = []
     for link in links:
@@ -80,6 +84,7 @@ def get_flights_links(airport):
             flight_links.append(str(SITE_BASIC_PATH) + str(details_link))
     print(flight_links)
     return flight_links
+
 
 def get_flights_details(flight_links):
     """
@@ -103,11 +108,14 @@ def get_flights_details(flight_links):
         departure_date = soup.find_all(FLIGHT_STAT_STR)[3].string
         arrival_date = soup.find_all(FLIGHT_STAT_STR)[26].string
         operating_airline = soup.find_all(FLIGHT_STAT_STR)[48].string
-        flight_details.append([flight_name, flight_status, departure_airport, arrival_airport, departure_date, arrival_date, operating_airline])
+        flight_details.append(
+            [flight_name, flight_status, departure_airport, arrival_airport, departure_date, arrival_date,
+             operating_airline])
 
+        #todo: fix this, get ALL elemnts in a list
         # Scrape for flight events (flight_events)
         a = soup.find_all(FLIGHT_STAT_STR, class_=FLIGHTS_EVENTS_STR)
-        string_before=""
+        string_before = ""
         time_iter = -1
         for i, b in enumerate(a):
             if b.string is None:  # empty cell
@@ -137,6 +145,7 @@ def combine_flights_data(flight_details, flight_events):
     flights_data = []
 
     number_of_flights = len(flight_details)
+    #todo: use zip instead
     for i in range(number_of_flights):
         flights_data.append([flight_details[i], flight_events[i]])
         print(flights_data[i])
@@ -151,8 +160,9 @@ def test_get_flights_links():
     """
     airport = 'ATL'
     flight_links = get_flights_links(airport)
-    assert len(flight_links)>0
+    assert len(flight_links) > 0
     print('The flightstats Scraper is ready.')
+
 
 def scrape_flights(filename):
     list_of_airports = get_iata_code(create_list_of_airports(filename))
@@ -163,6 +173,7 @@ def scrape_flights(filename):
         flight_links = get_flights_links(airport)
         flight_details, flight_events = get_flights_details(flight_links)
         flights_data = combine_flights_data(flight_details, flight_events)
+        # todo: append to a list which we return
     return flights_data
 
 
