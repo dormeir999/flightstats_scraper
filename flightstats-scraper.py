@@ -217,7 +217,7 @@ def main():
     :return:
     """
 
-    # test_get_flights_links()
+    test_get_flights_links()
     filename = sys.argv[1]
     flights_data = scrape_flights(filename)
     return flights_data
