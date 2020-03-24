@@ -54,6 +54,7 @@ def get_iata_code(airports):
     """creates an array with iata-codes and deletes airports without a code"""
     return [airport[IATA_FIELD_NO] for airport in airports if airport[IATA_FIELD_NO] != '']
 
+
 def get_html_links(soup):
     """
     Recives the html page's soup, returns a list of the links in the html page
