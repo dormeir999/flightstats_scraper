@@ -14,7 +14,6 @@ from selenium.common.exceptions import TimeoutException, WebDriverException
 import requests
 from bs4 import BeautifulSoup
 
-""""""
 
 
 def collect_flight_links(url):
@@ -47,8 +46,11 @@ def collect_flight_links(url):
             driver.execute_script(ex_script_scroll, WebDriverWait(driver, WD_WAIT_s).until(EC.element_to_be_clickable((By.XPATH, xpath_next))))
             driver.find_element_by_xpath(xpath_next).click()
             html_list.append(driver.page_source)
-
-        except (TimeoutException, WebDriverException):
+        except TimeoutException:
+            print("The page request timed-out...")
+            break
+        except WebDriverException:
+            print("The WebDriver failed to scrape the page...")
             break
 
     return html_list, num_pages

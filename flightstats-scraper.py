@@ -12,6 +12,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from next_page import collect_flight_links
+import os
 
 # Constants
 SPECIFIC_FLIGHT_IDENTIFIER = "flightId"
@@ -34,6 +35,14 @@ NO_FLIGHTS_MSG = 'No recent flights!'
 FIRST_ITEM = 0
 SECOND_ITEM = 1
 
+# soup array variables
+SOUP_FIND_DEP = 1
+SOUP_FIND_ARR = 3
+SOUP_FIND_DEP_DATE = 3
+SOUP_FIND_ARR_DATE = 26
+SOUP_FIND_OP_AL = 48
+
+
 def create_list_of_airports(filename):
     """takes a list of all airports and filters it to get only medium and large airports with following information:
     ['ident', 'type', 'name', 'elevation_ft', 'continent', 'iso_country', 'iso_region', 'municipality',
@@ -50,6 +59,7 @@ def create_list_of_airports(filename):
     except UnicodeError:
         print("The list of airports file " + str(filename) + " is not in the write csv form - exiting the program")
         sys.exit()
+
 
 def get_iata_code(airports):
     """
@@ -84,8 +94,9 @@ def get_flights_links(airport):
     :return: flight_links: a list of proper links to the flights departing from the airport in this moment.
     """
     # Variables for the links scrape and http request for data:
-    url = str(URL_FLIGHT_DEPT) + str(airport)
-    URL_BASE = url.split(URL_SPLIT_STR)[0]
+
+    url = os.path.join(URL_FLIGHT_DEPT, airport)
+    URL_BASE = url.split(URL_SPLIT_STR)[FIRST_ITEM]
     page = requests.get(url)
     html_list, num_of_pages = collect_flight_links(url)
 
@@ -130,25 +141,17 @@ def get_flight_details(soup):
     :param soup: html page of a flight link
     :return: list of data: [flight_name, flight_status, departure_airport, arrival_airport, departure_date,
                             arrival_date, operating_airline]
-
     """
 
-    # soup array variables
-    SOUP_FIND_DEP = 1
-    SOUP_FIND_ARR = 3
-    SOUP_FIND_DEP_DATE = 3
-    SOUP_FIND_ARR_DATE = 26
-    SOUP_FIND_OP_AL = 48
+    flight_details_dict = {'flight_name': soup.find(FLIGHT_NAME_STR).string,
+                           'flight_status': soup.find(FLIGHT_STAT_STR).string,
+                           'departure_airport': soup.find_all(AIRPORT_DEPT_STR)[SOUP_FIND_DEP].string,
+                           'arrival_airport': soup.find_all(AIRPORT_DEPT_STR)[SOUP_FIND_ARR].string,
+                           'departure_date': soup.find_all(FLIGHT_STAT_STR)[SOUP_FIND_DEP_DATE].string,
+                           'arrival_date': soup.find_all(FLIGHT_STAT_STR)[SOUP_FIND_ARR_DATE].string,
+                           'operating_airline': soup.find_all(FLIGHT_STAT_STR)[SOUP_FIND_OP_AL].string}
 
-    flight_name = soup.find(FLIGHT_NAME_STR).string
-    flight_status = soup.find(FLIGHT_STAT_STR).string
-    departure_airport = soup.find_all(AIRPORT_DEPT_STR)[SOUP_FIND_DEP].string
-    arrival_airport = soup.find_all(AIRPORT_DEPT_STR)[SOUP_FIND_ARR].string
-    departure_date = soup.find_all(FLIGHT_STAT_STR)[SOUP_FIND_DEP_DATE].string
-    arrival_date = soup.find_all(FLIGHT_STAT_STR)[SOUP_FIND_ARR_DATE].string
-    operating_airline = soup.find_all(FLIGHT_STAT_STR)[SOUP_FIND_OP_AL].string
-    return [flight_name, flight_status, departure_airport, arrival_airport, departure_date, arrival_date,
-            operating_airline]
+    return flight_details_dict
 
 
 def get_flight_events(soup):
@@ -166,7 +169,7 @@ def get_flight_events(soup):
     MONTH_STRING_LENGTH = 3
 
     for i, b in enumerate(a):
-        if b.string is None:  # empty cell
+        if not b.string:  # empty cell
             continue
         elif ":" in b.string:  # is time
             string_before = b.string
