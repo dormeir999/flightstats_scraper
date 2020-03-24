@@ -14,16 +14,26 @@ from selenium.common.exceptions import TimeoutException, WebDriverException
 import requests
 from bs4 import BeautifulSoup
 
-def collect_flight_links(url):
-    """This function collects links of each flight from the airport specific web page"""
+""""""
 
+
+def collect_flight_links(url):
+    """
+    This function collects links of each flight from the airport specific web page using pagination.
+    :param url: airport specific url
+    :return: html_list -> list of html (one item per page), num_pages -> number of pages
+    """
+
+    OFF_SET_P = 3
+    WD_WAIT_s = 5
     num_pages = get_number_of_pages(url)
     html_list = []
     driver = webdriver.Chrome()
     driver.get(url)
     if num_pages == 0:
-        return html_list, num_pages  #.append(driver.page_source)
-    div_num_next = str(num_pages + 3)
+        return html_list, num_pages
+
+    div_num_next = str(num_pages + OFF_SET_P)
     xpath_next = "//*[@id=\"__next\"]/div/section/div/div[2]/div[1]/div[3]/div/div/div[" + div_num_next + "]/span"
     ex_script_scroll = "return arguments[0].scrollIntoView(true);"
 
@@ -34,7 +44,7 @@ def collect_flight_links(url):
     while count < num_pages:
         count += 1
         try:
-            driver.execute_script(ex_script_scroll, WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, xpath_next))))
+            driver.execute_script(ex_script_scroll, WebDriverWait(driver, WD_WAIT_s).until(EC.element_to_be_clickable((By.XPATH, xpath_next))))
             driver.find_element_by_xpath(xpath_next).click()
             html_list.append(driver.page_source)
 
@@ -43,19 +53,24 @@ def collect_flight_links(url):
 
     return html_list, num_pages
 
+
 def get_number_of_pages(url):
-    """gets the number of pages on the airport departure website"""
+    """
+    gets the number of pages on the airport departure website
+    :param url: airport specific url
+    :return: number_of_pages
+    """
 
     soup = BeautifulSoup(requests.get(url).content, 'html.parser')
-    paginations = soup.select("span", class_="pagination__PageNavigation-s1515b5x-3 cKpakR")
+    pagination = soup.select("span", class_="pagination__PageNavigation-s1515b5x-3 cKpakR")
 
-    page_number_paginations = []
-    for b in paginations:
+    page_number_pagination = []
+    for b in pagination:
         if b.get_text().isnumeric():
-            page_number_paginations.append(b.get_text())
-    if len(page_number_paginations) == 0:
+            page_number_pagination.append(b.get_text())
+    if len(page_number_pagination) == 0:
         return 0
-    number_of_pages = int(page_number_paginations[-1])
+    number_of_pages = int(page_number_pagination[-1])
     return number_of_pages
 
 
@@ -64,9 +79,11 @@ def test_pagination(url):
 
     assert get_number_of_pages(url) == len(collect_flight_links(url))
 
+
 def main():
     url= 'https://www.flightstats.com/v2/flight-tracker/departures/tlv'
     test_pagination(url)
+
 
 if __name__ == "__main__":
     main()
