@@ -12,6 +12,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from next_page import collect_flight_links
+import os
 
 # Constants
 SPECIFIC_FLIGHT_IDENTIFIER = "flightId"
@@ -55,6 +56,7 @@ def get_iata_code(airports):
     """creates an array with iata-codes and deletes airports without a code"""
     return [airport[IATA_FIELD_NO] for airport in airports if airport[IATA_FIELD_NO] != '']
 
+
 def get_html_links(soup, only_one_page):
     """
     Recives the html page's soup, returns a list of the links in the html page
@@ -62,7 +64,7 @@ def get_html_links(soup, only_one_page):
     :return: the list of links in the html page (both flight and non flight links
     """
     # Get all the html's links, including the detailed websites on flights links
-    if only_one_page:     # if only one page, the soup structure is different...
+    if only_one_page:  # if only one page, the soup structure is different...
         unparsed_list_of_links = list(soup.children)[1].find_all(HTML_LINKS_STR1)
     else:  # use the soup structure of multiple pages
         unparsed_list_of_links = list(soup.children)[0].find_all(HTML_LINKS_STR1)
@@ -78,18 +80,17 @@ def get_flights_links(airport):
     :return: flight_links: a list of proper links to the flights departing from the airport in this moment.
     """
     # Variables for the links scrape and http request for data:
-    url = str(URL_FLIGHT_DEPT) + str(airport)
+    url = os.path.join(URL_FLIGHT_DEPT, airport)
     SITE_BASIC_PATH = url.split(URL_SPLIT_STR)[0]
     page = requests.get(url)
     html_list, num_of_pages = collect_flight_links(url)
-
 
     # Get all the html's links, including the detailed websites on flights links
     if not html_list:
         only_one_page = True
         links = get_html_links(BeautifulSoup(page.content, HTML_PARSER_STR), only_one_page)
         flight_links = filter_flights_links(links, SITE_BASIC_PATH)
-        return flight_links , only_one_page
+        return flight_links, only_one_page
 
     only_one_page = False
     links = [get_html_links(BeautifulSoup(html, HTML_PARSER_STR), only_one_page) for html in html_list]
@@ -111,21 +112,25 @@ def filter_flights_links(links, SITE_BASIC_PATH):
     """
     #  This is a list comprehension that finds the flight track tag on all links with specific flight_identifier, and
     #  returns the proper address of the flight link
-    return [str(SITE_BASIC_PATH) + str(re.sub(FLIGHT_TRACK_TAG, FLIGHT_INFO_TAG, link)) for link in links if re.findall(SPECIFIC_FLIGHT_IDENTIFIER, link)]
+    return [str(SITE_BASIC_PATH) + str(re.sub(FLIGHT_TRACK_TAG, FLIGHT_INFO_TAG, link)) for link in links if
+            re.findall(SPECIFIC_FLIGHT_IDENTIFIER, link)]
+
 
 def get_flight_details(soup):
     """
     Receives the soup of an html page of a flight link, and returns the flights details:
     [flight_name, flight_status, departure_airport, arrival_airport, departure_date, arrival_date, operating_airline]
     """
-    flight_name = soup.find(FLIGHT_NAME_STR).string
-    flight_status = soup.find(FLIGHT_STAT_STR).string
-    departure_airport = soup.find_all(AIRPORT_DEPT_STR)[1].string
-    arrival_airport = soup.find_all(AIRPORT_DEPT_STR)[3].string
-    departure_date = soup.find_all(FLIGHT_STAT_STR)[3].string
-    arrival_date = soup.find_all(FLIGHT_STAT_STR)[26].string
-    operating_airline = soup.find_all(FLIGHT_STAT_STR)[48].string
-    return [flight_name, flight_status, departure_airport, arrival_airport, departure_date, arrival_date, operating_airline]
+    flight_details_dict = {'flight_name': soup.find(FLIGHT_NAME_STR).string,
+                           'flight_status': soup.find(FLIGHT_STAT_STR).string,
+                           'departure_airport': soup.find_all(AIRPORT_DEPT_STR)[1].string,
+                           'arrival_airport': soup.find_all(AIRPORT_DEPT_STR)[3].string,
+                           'departure_date': soup.find_all(FLIGHT_STAT_STR)[3].string,
+                           'arrival_date': soup.find_all(FLIGHT_STAT_STR)[26].string,
+                           'operating_airline': soup.find_all(FLIGHT_STAT_STR)[48].string}
+
+    return flight_details_dict
+
 
 def get_flight_events(soup):
     """
@@ -136,7 +141,7 @@ def get_flight_events(soup):
     time_iter = -1
     flight_events = []
     for i, b in enumerate(a):
-        if b.string is None:  # empty cell
+        if not b.string:  # empty cell
             continue
         elif ":" in b.string:  # is time
             string_before = b.string
@@ -153,6 +158,7 @@ def get_flight_events(soup):
             flight_events.append(b.string)
     return flight_events
 
+
 def get_flights_data(flight_links):
     """
     Receives a list of hyperlinks for full details of flights (times, date, flight events),
@@ -168,12 +174,13 @@ def get_flights_data(flight_links):
     for flight_link in flight_links[0]:
         page = requests.get(flight_link)  # HTML request
         soup = BeautifulSoup(page.content, HTML_PARSER_STR)
-        flight_details.append(get_flight_details(soup))   # Scrape for regular flight's details (name, destination, gate)
+        flight_details.append(get_flight_details(soup))  # Scrape for regular flight's details (name, destination, gate)
         flight_events.append(get_flight_events(soup))  # Scrapte for before and during the flight
 
     flights_data = list(zip(flight_details, flight_events))  # zip the two data lists together
     print(flights_data)
     return flights_data
+
 
 def test_get_flights_links():
     """
@@ -209,7 +216,8 @@ def main():
     Tests the scraper, get's the airports file and performs the scraping, return the flights_data
     :return:
     """
-    test_get_flights_links()
+
+    # test_get_flights_links()
     filename = sys.argv[1]
     flights_data = scrape_flights(filename)
     return flights_data
