@@ -19,6 +19,7 @@ Python Libaries:
 * re
 * csv
 * sys
+* os
 
 Webbrowser:
 The program uses Chrome as a browser. For Selenium to work a WebDriver needs to be intalled:
