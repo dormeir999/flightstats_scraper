@@ -17,6 +17,9 @@ import argparse
 import pandas as pd
 
 
+# contant for testing
+TESTING_AIRPORT = 'ATL'
+
 # constants for flights web urls
 SPECIFIC_FLIGHT_IDENTIFIER = "flightId"
 FLIGHT_INFO_TAG = "flight-details"
@@ -269,9 +272,9 @@ def test_get_flights_links():
     We'll use the busiest airport in the world as of 2019 - Hartsfield–Jackson Atlanta International Airport - ATL.
     :return: If flight_links is not empty, 'The flightstats scraper is ready.'). else - fail.
     """
-    airport = 'ATL'
-    flight_links = get_flights_links(airport)
+    airport = TESTING_AIRPORT
     print("TESTING: Getting all flights links from Atlanta airport:")
+    flight_links = get_flights_links(airport)
     assert len(flight_links) > 0
     print('The flightstats Scraper is ready.')
     print('_________________________________')
@@ -298,6 +301,8 @@ def main():
     Handls filter arguments of airports and run the scraper
     :return:
     """
+    # test scraper
+    test_get_flights_links()
 
     # arguments parsing
     parser = argparse.ArgumentParser(description="Insert the filename of airport details."
