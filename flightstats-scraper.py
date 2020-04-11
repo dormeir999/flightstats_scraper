@@ -15,7 +15,9 @@ from next_page import collect_flight_links
 import os
 import argparse
 import pandas as pd
-
+from db_airports import db_feed_flights_data
+import mysql.connector
+from list_airport_codes import create_list_of_airports
 
 # contant for testing
 TESTING_AIRPORT = 'ATL'
@@ -80,6 +82,13 @@ ISO_COUNTRIES_CODES = ['US', 'PR', 'MH', 'MP', 'GU', 'SO', 'AQ', 'GB', 'PG', 'AD
        'PY', 'TW', 'SG', 'VI', 'SM', 'UY', 'VE', 'AG', 'BB', 'DM', 'GP',
        'MQ', 'BL', 'TJ', 'KN', 'LC', 'TM', 'AW', 'BQ', 'CW', 'SX', 'AI',
        'MS', 'TT', 'VG', 'VC', 'UZ', 'VA', 'MO', 'BT', 'BN', 'CC', 'CX']
+
+# constants for DB:
+host="localhost"
+user="root"
+passwd='flightscraper'
+database='flight_departures'
+logfile = 'fs_log.log'
 
 
 def create_list_of_airports(filename, type, max_feet, min_feet, country, continent):
@@ -282,11 +291,20 @@ def get_flights_data(flight_links):
     for flight_link in flight_links[FIRST_ITEM]:
         page = requests.get(flight_link)  # HTML request
         soup = BeautifulSoup(page.content, HTML_PARSER_STR)
-        flight_details.append(get_flight_details(soup))  # Scrape for regular flight's details (name, destination, gate)
-        flight_events.append(get_flight_events(soup))  # Scrape for before and during the flight
+
+        flight_detail_temp = get_flight_details(soup)
+        flight_details.append(flight_detail_temp)  # Scrape for regular flight's details (name, destination, gate)
+
+        flight_event_temp = get_flight_events(soup)
+        flight_events.append(flight_event_temp)  # Scrape for before and during the flight
 
     flights_data = list(zip(flight_details, flight_events))  # zip the two data lists together
     print(flights_data)
+
+    # FEED to DATABASE
+    db_feed_flights_data(flights_data)
+    print("data added to database")
+
     return flights_data
 
 
@@ -318,17 +336,18 @@ def scrape_flights(filename, type, max_feet, min_feet, country, continent):
         print("_________________________________________")
         print("Scraping recent flights from " + str(airport) + " airport:")
         flights_data.append(get_flights_data(get_flights_links(airport)))
-    return flights_data
 
+    return flights_data
 
 
 def main():
     """
-    Tests the scraper, handls filter arguments of airports and run the scraper
+    Tests the scraper, handles filter arguments of airports and run the scraper
     :return:
     """
     # test scraper
-    test_get_flights_links()
+    # test_get_flights_links()
+    # scrape_flights('airport-codes.csv', ['large_airport'], 1000, 0, ['IL'], CONTINENTS_2DIGITS)
 
     # arguments parsing
     parser = argparse.ArgumentParser(description="Insert the filename of airport details."
