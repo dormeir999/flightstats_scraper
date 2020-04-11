@@ -43,21 +43,21 @@ If this succeeds, it will move on to scraping the supplied airport data csv file
 ### Database Design: ###
 
 /***
-|        __AIRPORTS__      |
-|-------------|------------|
-|  __FIELD__  |  __TYPE__  | 
-|-------------|------------|
-| id.         | INT [PK]   |
-| name        | VARCHAR    |
-| type        | VARCHAR    | 
-| elevation_ft| INTEGER    |
-| continent   | VARCHAR    |
-| iso_country | VARCHAR    |
-| iso_region  | VARCHAR    |
-| municipality| VARCHAR    |
-| gps_code    | VARCHAR    |
-| iata_code   | VARCHAR    |
-| local_code  | VARCHAR    |
-| longitude   | FLOAT      |
-| latitude    | FLOAT      |
+
+|-------------|------------|------------|----------|-------------|------------|
+|  __FIELD__  |  __TYPE__  | __NULL__   | __KEY__  | __DEFAULT__ | __EXTRA__  |
+|-------------|------------|------------|----------|-------------|------------|
+| id.         | INT [PK]   |            |          |             |            |
+| name        | VARCHAR    |            |          |             |            |
+| type        | VARCHAR    |            |          |             |            |
+| elevation_ft| INTEGER    |            |          |             |            |
+| continent   | VARCHAR    |            |          |             |            |
+| iso_country | VARCHAR    |            |          |             |            |
+| iso_region  | VARCHAR    |            |          |             |            |
+| municipality| VARCHAR    |            |          |             |            |
+| gps_code    | VARCHAR    |            |          |             |            |
+| iata_code   | VARCHAR    |            |          |             |            |
+| local_code  | VARCHAR    |            |          |             |            |
+| longitude   | FLOAT      |            |          |             |            |
+| latitude    | FLOAT      |            |          |             |            |
 ***/
