@@ -41,9 +41,9 @@ Before performing the scrape the scraper will first try to fetch the recent flig
 If this succeeds, it will move on to scraping the supplied airport data csv file.
 
 ### Database Design: ###
-/***
+
 |  __FIELD__  |  __TYPE__  | 
 |-------------|------------|
 | airports    | Soccer     |
 | Dog         | Basketball | 
-***/
+
