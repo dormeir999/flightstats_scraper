@@ -43,7 +43,6 @@ If this succeeds, it will move on to scraping the supplied airport data csv file
 ### Database Design: ###
 
 /***
-|--------------------------|
 |        __AIRPORTS__      |
 |-------------|------------|
 |  __FIELD__  |  __TYPE__  | 
