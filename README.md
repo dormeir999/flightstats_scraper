@@ -42,7 +42,7 @@ If this succeeds, it will move on to scraping the supplied airport data csv file
 
 ### Database Design: ###
 
-|-------------|------------|
+|--------------------------|
 |        airports          |
 |-------------|------------|
 |  __FIELD__  |  __TYPE__  | 
@@ -60,4 +60,4 @@ If this succeeds, it will move on to scraping the supplied airport data csv file
 | local_code  | VARCHAR    |
 | longitude   | FLOAT      |
 | latitude    | FLOAT      |
-|-------------|------------|
+|--------------------------|
