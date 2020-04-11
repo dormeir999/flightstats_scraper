@@ -40,3 +40,10 @@ python3 flightstats-scraper.py airports.csv
 Before performing the scrape the scraper will first try to fetch the recent flights from the Hartsfield–Jackson Atlanta International Airport - The busiest airport in the world. 
 If this succeeds, it will move on to scraping the supplied airport data csv file.
 
+### Database Design: ###
+/***
+|  __FIELD__  |  __TYPE__  | 
+|-------------|------------|
+| airports    | Soccer     |
+| Dog         | Basketball | 
+***/
