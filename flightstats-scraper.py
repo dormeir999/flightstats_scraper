@@ -32,22 +32,23 @@ URL_FLIGHT_DEPT = 'https://www.flightstats.com/v2/flight-tracker/departures/'
 # constants used for html parsing
 HTML_PARSER_STR = 'html.parser'
 FLIGHT_TRACKER_STR = 'h2'
-FLIGHT_NAME_STR = "h1"
+FLIGHT_NUMBER_STR = "h1"
 FLIGHT_STAT_STR = "p"
 AIRPORT_DEPT_STR = "h2"  # In a different context, it's also the flight tracker string (see above)
 FLIGHTS_EVENTS_STR = 'rowData'
 HTML_LINKS_STR1 = 'a'
 HTML_LINKS_STR2 = 'href'
 NO_FLIGHTS_MSG = 'No recent flights!'
+AIRPORT_CODE_CLASS = "airportCodeTitle"
+DATE_CLASS = "date"
+FLIGHT_CARRIER_STRING = "h1"
+FLIGHT_CARRIER_CLASS = "carrier-text-style"
+FLIGHT_CARRIER_SPACE_STR = " "
 FIRST_ITEM = 0
 SECOND_ITEM = 1
+THIRD_ITEM = 2
+FOURTH_ITEM = 3
 
-# soup array variables
-SOUP_FIND_DEP = 1
-SOUP_FIND_ARR = 3
-SOUP_FIND_DEP_DATE = 3
-SOUP_FIND_ARR_DATE = 26
-SOUP_FIND_OP_AL = 48
 
 # constants used for filtering iata codes
 IATA_STR = 'iata_code'
@@ -228,17 +229,21 @@ def get_flight_details(soup):
     """
     Receives the soup of an html page of a flight link, and returns the flights details.
     :param soup: html page of a flight link
-    :return: list of data: [flight_name, flight_status, departure_airport, arrival_airport, departure_date,
+    :return: list of data: [flight_number, flight_status, departure_airport, arrival_airport, departure_date,
                             arrival_date, operating_airline]
     """
 
-    flight_details_dict = {'flight_name': soup.find(FLIGHT_NAME_STR).string,
+    flight_details_dict = {'flight_number': soup.find(FLIGHT_CARRIER_STRING,
+                                    class_=FLIGHT_CARRIER_CLASS).string.split(FLIGHT_CARRIER_SPACE_STR)[-FOURTH_ITEM],
                            'flight_status': soup.find(FLIGHT_STAT_STR).string,
-                           'departure_airport': soup.find_all(AIRPORT_DEPT_STR)[SOUP_FIND_DEP].string,
-                           'arrival_airport': soup.find_all(AIRPORT_DEPT_STR)[SOUP_FIND_ARR].string,
-                           'departure_date': soup.find_all(FLIGHT_STAT_STR)[SOUP_FIND_DEP_DATE].string,
-                           'arrival_date': soup.find_all(FLIGHT_STAT_STR)[SOUP_FIND_ARR_DATE].string,
-                           'operating_airline': soup.find_all(FLIGHT_STAT_STR)[SOUP_FIND_OP_AL].string}
+                           'departure_airport': soup.find_all(AIRPORT_DEPT_STR,
+                                                              class_=AIRPORT_CODE_CLASS)[FIRST_ITEM].string,
+                           'arrival_airport': soup.find_all(AIRPORT_DEPT_STR,
+                                                              class_=AIRPORT_CODE_CLASS)[SECOND_ITEM].string,
+                           'departure_date': soup.find_all(FLIGHT_STAT_STR, class_=DATE_CLASS)[FIRST_ITEM].string,
+                           'arrival_date': soup.find_all(FLIGHT_STAT_STR, class_=DATE_CLASS)[THIRD_ITEM].string,
+                           'operating_airline': FLIGHT_CARRIER_SPACE_STR.join(soup.find(FLIGHT_CARRIER_STRING,
+                                    class_=FLIGHT_CARRIER_CLASS).string.split(FLIGHT_CARRIER_SPACE_STR)[:-FOURTH_ITEM])}
 
     return flight_details_dict
 
