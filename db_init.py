@@ -57,8 +57,8 @@ def create_tables():
     cur.execute("CREATE TABLE IF NOT EXISTS events("
                 "id INTEGER(255) PRIMARY KEY AUTO_INCREMENT"
                 ", flight_id VARCHAR(255)"
-                ", event_time VARCHAR(255)"
-                ", event_date VARCHAR(255)"
+                ", event_time TIME"
+                ", event_date DATE"
                 ", event_type VARCHAR(255))")
 
     try:
@@ -70,14 +70,15 @@ def create_tables():
     cur.execute("CREATE TABLE IF NOT EXISTS departures("
                 "id INTEGER PRIMARY KEY AUTO_INCREMENT"
                 ", flight_id VARCHAR(255), FOREIGN KEY (flight_id) REFERENCES events(flight_id)"
-                ", departure_airport VARCHAR(255), FOREIGN KEY (departure_airport) REFERENCES airports(iata_code)"
-                ", airline VARCHAR(255)"
+                ", departure_airport VARCHAR(10), FOREIGN KEY (departure_airport) REFERENCES airports(iata_code)"
+                ", airline VARCHAR(50)"
                 ", flight_number INTEGER"
                 ", flight_status VARCHAR(255)"
-                ", arrival_airport VARCHAR(255)"
-                ", departure_date VARCHAR(255)"
-                ", arrival_date VARCHAR(255)"
+                ", arrival_airport VARCHAR(10)"
+                ", departure_date DATE"
+                ", arrival_date DATE"
                 ", operating_airline VARCHAR(255))")
+
     try:
         cur.execute("CREATE UNIQUE INDEX idx_flight ON departures(flight_id)")
     except mysql.connector.errors.ProgrammingError:

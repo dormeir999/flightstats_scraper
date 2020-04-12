@@ -6,13 +6,27 @@ Authors: Itamar Bergfreund & Dor Meir
 
 import mysql.connector
 from list_airport_codes import create_list_of_airports
+from datetime import datetime
+
 
 # for config file
-host="localhost"
-user="root"
-passwd='flightscraper'
+host = "localhost"
+user = "root"
+passwd = 'flightscraper'
 database='flight_departures'
 logfile = 'fs_log.log'
+key_dep_date = 'departure_date'
+key_arr_date = 'arrival_date'
+key_airline = 'operating_airline'
+key_flight_number = 'flight_number'
+key_flight_id = 'flight_id'
+length_of_events = 3
+first_elem = 0
+second_elem = 1
+third_elem = 2
+iata_code = 9
+coordinates = 11
+elevation = 3
 
 
 def db_create_cursor():
@@ -40,15 +54,15 @@ def db_insert_airports(filename='airport-codes.csv'):
                    "municipality, gps_code, iata_code, local_code, longitude, latitude) " \
                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
-    for x, airport in enumerate(airports[1:]):
+    for x, airport in enumerate(airports[second_elem:]):
 
         # if elevation is empty fill in None value
-        if airport[3] == '':
-            airport[3] = None
+        if airport[elevation] == '':
+            airport[elevation] = None
 
         # if iata-code is empty fill skip
-        if airport[9] != '' and airport[9] != '0':
-            data = (tuple(airport[1:11]) + tuple(airport[11].split(', ')))
+        if airport[iata_code] != '' and airport[iata_code] != '0':
+            data = (tuple(airport[second_elem:coordinates]) + tuple(airport[coordinates].split(', ')))
 
             # catch error if there are duplicates in the data set
             try:
@@ -62,32 +76,56 @@ def db_insert_airports(filename='airport-codes.csv'):
 def db_insert_flights(flight_data):
     """This function takes the a flight data dictionary as an input and feeds it into the database table departures.
     :param flight_data: e.g.
-                        {'flight_status': 'On time | Arrived',
-                        'departure_airport': 'GVA',
-                        'arrival_airport': 'AMS',
-                        'departure_date': '10-Apr-2020',
-                        'arrival_date': '10-Apr-2020',
-                        'operating_airline': 'Operated by KLM 1928',
-                        'airline': 'Xiamen Airlines',
-                        'flight_number': '9600',
-                        'flight_id': 'Xiamen Airlines_9600_10-Apr-2020'}"""
+                    {'flight_number': '425',
+                    'flight_status': 'On time | Scheduled',
+                    'departure_airport': 'TLV',
+                    'arrival_airport': 'ETM',
+                    'departure_date': '12-Apr-2020',
+                    'arrival_date': '12-Apr-2020',
+                    'operating_airline': '(6H) Israir Airlines'}"""
 
     table = 'departures'
+    dep_airport = flight_data['departure_airport']
+    flight_id = flight_data['flight_id']
+    flight_status = flight_data['flight_status']
+    arrival_airport = flight_data['arrival_airport']
+    departure_date = flight_data['departure_date']
+    arrival_date = flight_data['arrival_date']
+    operating_airline = flight_data['operating_airline']
+    flight_number = flight_data['flight_number']
+
     db, cur = db_create_cursor()
 
     # change type of data from bs4.elemnt.NavigableString to string
     for e in flight_data.keys():
         flight_data[e] = str(flight_data[e])
 
-    placeholder = ", ".join(["%s"] * len(flight_data))
-    stmt = "INSERT INTO {table} ({columns}) VALUES ({values});".format(table=table,
-                                                                       columns=",".join(flight_data.keys()),
-                                                                       values=placeholder)
-    try:
-        cur.execute(stmt, list(flight_data.values()))
+    # check if there is an entry for this data:
+    is_observation = db_select_flight(dep_airport, flight_id)
 
-    except mysql.connector.errors.IntegrityError as err:
-        print("Error caught while updating flights table: {}".format(err))
+    if is_observation:
+        stmt = f"UPDATE {table} SET " \
+               f"flight_status = '{flight_status}', " \
+               f"departure_date = '{departure_date}', " \
+               f"arrival_airport = '{arrival_airport}', " \
+               f"arrival_date = '{arrival_date}', " \
+               f"operating_airline = '{operating_airline}', " \
+               f"flight_number = '{flight_number}' " \
+               f"WHERE " \
+               f"departure_airport='{dep_airport}' AND flight_id='{flight_id}';"
+        cur.execute(stmt)
+
+    else:
+        placeholder = ", ".join(["%s"] * len(flight_data))
+        stmt = "INSERT INTO {table} ({columns}) VALUES ({values});".format(table=table,
+                                                                           columns=",".join(flight_data.keys()),
+                                                                           values=placeholder)
+        try:
+            cur.execute(stmt, list(flight_data.values()))
+        except mysql.connector.errors.IntegrityError as err:
+            print(stmt)
+            print(list(flight_data.values()))
+            print("Error caught while inserting flights table: {}".format(err))
     db.commit()
 
 
@@ -104,42 +142,32 @@ def db_insert_events(events_data):
     table = 'events'
     placeholder = ", ".join(["%s"] * length)
     smt = "INSERT INTO {table} ({columns}) values ({values});".format(table=table,
-                                                                        columns='flight_id, event_date, event_time, '
-                                                                                'event_type',
-                                                                        values=placeholder)
+                                                                      columns='flight_id, event_date, event_time'
+                                                                              ', event_type',
+                                                                      values=placeholder)
 
     try:
         cur.execute(smt, events_data)
-
     except mysql.connector.errors.IntegrityError as err:
         print("Error while inserting events data: {}".format(err))
-
     db.commit()
 
 
-def flight_data_prepare(flight_data):
+def create_flight_id(flight_data):
+    """
+    this function creates a unique key: flight_id and adds it to the flight_data that consists of
+    flight_number, operating_airline, departure_date
+    :param flight_data:
+    :return: flight_data with new unique field, flight_id
+    """
 
-    key_airline = 'airline'
-    key_flight_number = 'flight_number'
-    key_flight_name = 'flight_name'
-    key_flight_id = 'flight_id'
+    flight_data[key_flight_id] = '_'.join([flight_data[key_airline], flight_data[key_flight_number],
+                                           flight_data[key_dep_date]])
 
-    # todo: split data while handling data
-    temp = list(flight_data.values())[0].split(' ')
-    if len(temp) == 5:
-        al_min = 1
-        al_max = 2
-    elif len(temp) == 6:
-        al_min = 1
-        al_max = 3
-    elif len(temp) == 7:
-        al_min = 1
-        al_max = 4
+    # create date from string:
+    flight_data[key_dep_date] = datetime.strptime(flight_data[key_dep_date], '%d-%b-%Y')
+    flight_data[key_arr_date] = datetime.strptime(flight_data[key_arr_date], '%d-%b-%Y')
 
-    flight_data[key_airline] = ' '.join(temp[al_min:al_max])
-    flight_data[key_flight_number] = temp[-3]
-    flight_data[key_flight_id] = '_'.join([flight_data['airline'], flight_data['flight_number'], flight_data['departure_date']])
-    del flight_data[key_flight_name]
     return flight_data
 
 
@@ -147,31 +175,53 @@ def db_feed_flights_data(flights_data):
     """This function takes the data scraped per airport and loops over every flight in the data"""
 
     for flight_data in flights_data:
-        events_data = flight_data[1]
-        flight_data = flight_data[0]
-        flight_data = flight_data_prepare(flight_data)
+        events_data = flight_data[second_elem]
+        flight_data = flight_data[first_elem]
+        flight_data = create_flight_id(flight_data)
 
         # prepare events_data:
-        for i in range(0, len(events_data), 3):
-            event_data = ('_'.join([flight_data['airline'], flight_data['flight_number'],
-                                    flight_data['departure_date']]), events_data[i], events_data[i + 1],
-                          events_data[i + 2])
+        for i in range(0, len(events_data), length_of_events):
+            now = datetime.now()
+            event_date = datetime.strptime(events_data[i] + '-' + str(now.year) + '-'+ events_data[i+1] , '%d %b-%Y-%H:%M')
 
-        db_insert_events(event_data)
+            # todo remove 0 (event time) adjust in db structure
+            event_data = (flight_data[key_flight_id] , event_date, 0, events_data[i + third_elem])
+
+            # inserting event_data
+            db_insert_events(event_data)
+
+        # inserting flight data
         db_insert_flights(flight_data)
+
+
+def db_select_flight(airport, flight_id):
+
+    table = 'departures'
+    db, cur = db_create_cursor()
+
+    stmt = f"SELECT * " \
+           f"FROM {table} " \
+           f"WHERE departure_airport='{airport}' AND flight_id='{flight_id}';"
+    cur.execute(stmt)
+    return cur.fetchall()
 
 
 def main():
 
-    flights_data = [({'flight_name': '(5C) C.A.L. Cargo Airlines 971 Flight Details', 'flight_status': 'Arrived', 'departure_airport': 'TLV', 'arrival_airport': 'LGG', 'departure_date': '10-Apr-2020', 'arrival_date': ' ', 'operating_airline': '08:39'}, ['11 Apr', '08:39', 'Status Landed', '11 Apr', '08:32', 'Time Adjustment', '11 Apr', '08:29', 'Time Adjustment', '11 Apr', '07:59', 'Time Adjustment', '11 Apr', '07:14', 'Time Adjustment', '11 Apr', '04:49', 'Time Adjustment', '11 Apr', '04:40', 'Status Active', '7 Apr', '20:04', 'Record Created', '7 Apr', '20:04', 'Time Adjustment']), ({'flight_name': '(UA) United Airlines 2770 Flight Details', 'flight_status': 'Delayed by 14h 39m | Departed', 'departure_airport': 'TLV', 'arrival_airport': 'SFO', 'departure_date': '11-Apr-2020', 'arrival_date': 'San Francisco International Airport, CA, US', 'operating_airline': 'Tail Number'}, ['11 Apr', '13:16', 'Time Adjustment', '11 Apr', '13:16', 'Time Adjustment', '11 Apr', '12:57', 'Time Adjustment', '11 Apr', '12:57', 'Status Active', '11 Apr', '06:07', 'Gate Adjustment', '11 Apr', '06:00', 'Gate Adjustment', '11 Apr', '03:13', 'Time Adjustment', '10 Apr', '03:11', 'Time Adjustment', '9 Apr', '21:56', 'Time Adjustment', '8 Apr', '20:15', 'Time Adjustment', '8 Apr', '20:15', 'Record Created']), ({'flight_name': '(BBG) Blue Bird Airways 754 Flight Details', 'flight_status': 'On time | Scheduled', 'departure_airport': 'TLV', 'arrival_airport': 'HER', 'departure_date': '11-Apr-2020', 'arrival_date': 'Actual', 'operating_airline': 'Record Created'}, ['8 Apr', '20:07', 'Record Created', '8 Apr', '20:07', 'Time Adjustment']), ({'flight_name': '(BBG) Blue Bird Airways 692 Flight Details', 'flight_status': 'On time | Scheduled', 'departure_airport': 'TLV', 'arrival_airport': 'RHO', 'departure_date': '11-Apr-2020', 'arrival_date': 'Actual', 'operating_airline': 'Record Created'}, ['8 Apr', '20:07', 'Record Created', '8 Apr', '20:07', 'Time Adjustment']), ({'flight_name': '(BBG) Blue Bird Airways 752 Flight Details', 'flight_status': 'On time | Scheduled', 'departure_airport': 'TLV', 'arrival_airport': 'HER', 'departure_date': '11-Apr-2020', 'arrival_date': 'Actual', 'operating_airline': 'Record Created'}, ['8 Apr', '20:07', 'Record Created', '8 Apr', '20:07', 'Time Adjustment']), ({'flight_name': '(A9) Georgian Airways 696 Flight Details', 'flight_status': 'On time | Scheduled', 'departure_airport': 'TLV', 'arrival_airport': 'TBS', 'departure_date': '11-Apr-2020', 'arrival_date': 'Actual', 'operating_airline': 'Record Created'}, ['8 Apr', '20:04', 'Record Created', '8 Apr', '20:04', 'Time Adjustment']), ({'flight_name': '(UA) United Airlines 91 Flight Details', 'flight_status': 'Delayed by 37m | Departed', 'departure_airport': 'TLV', 'arrival_airport': 'EWR', 'departure_date': '11-Apr-2020', 'arrival_date': 'Newark Liberty International Airport, NJ, US', 'operating_airline': 'Tail Number'}, ['11 Apr', '20:23', 'Time Adjustment', '11 Apr', '19:46', 'Time Adjustment', '11 Apr', '19:29', 'Time Adjustment', '11 Apr', '19:08', 'Time Adjustment', '11 Apr', '18:17', 'Time Adjustment', '11 Apr', '15:35', 'Time Adjustment', '11 Apr', '13:22', 'Time Adjustment', '11 Apr', '09:56', 'Time Adjustment', '11 Apr', '09:46', 'Time Adjustment', '11 Apr', '08:44', 'Status Active', '10 Apr', '22:06', 'Gate Adjustment', '10 Apr', '20:51', 'Gate Adjustment', '10 Apr', '20:26', 'Time Adjustment', '9 Apr', '12:04', 'Equipment Adjustment', '9 Apr', '05:15', 'Time Adjustment', '8 Apr', '20:15', 'Time Adjustment', '8 Apr', '20:15', 'Record Created'])]
-    # # initialize databse:
-    create_database()
+    flights_data = [({'flight_number': '425', 'flight_status': 'On time | Scheduled', 'departure_airport': 'TLV',
+                      'arrival_airport': 'ETM', 'departure_date': '12-Apr-2020', 'arrival_date': '12-Apr-2020',
+                      'operating_airline': '(6H) Israir Airlines'},
+                     ['12 Apr', '05:23', 'Equipment Adjustment', '9 Apr', '20:04', 'Record Created', '9 Apr', '20:04',
+                      'Time Adjustment']),
 
-    # # create Tables:
-    create_tables()
+                    ({'flight_number': '756', 'flight_status': 'On time | Scheduled', 'departure_airport': 'TLV',
+                      'arrival_airport': 'HER', 'departure_date': '12-Apr-2020', 'arrival_date': '12-Apr-2020',
+                      'operating_airline': '(BBG) Blue Bird Airways'},
+                     ['9 Apr', '20:07', 'Record Created', '9 Apr', '20:07', 'Time Adjustment']), ({'flight_number': '754', 'flight_status': 'On time | Scheduled', 'departure_airport': 'TLV', 'arrival_airport': 'HER', 'departure_date': '12-Apr-2020', 'arrival_date': '12-Apr-2020', 'operating_airline': '(BBG) Blue Bird Airways'}, ['9 Apr', '20:07', 'Record Created', '9 Apr', '20:07', 'Time Adjustment']), ({'flight_number': '23', 'flight_status': 'Arrived', 'departure_airport': 'TLV', 'arrival_airport': 'DTW', 'departure_date': '12-Apr-2020', 'arrival_date': '12-Apr-2020', 'operating_airline': '(LY) El Al'}, ['12 Apr', '18:15', 'Time Adjustment', '12 Apr', '18:04', 'Time Adjustment', '12 Apr', '18:02', 'Status Landed', '12 Apr', '17:58', 'Time Adjustment', '12 Apr', '17:53', 'Time Adjustment', '12 Apr', '17:51', 'Time Adjustment', '12 Apr', '17:51', 'Time Adjustment', '12 Apr', '17:49', 'Time Adjustment', '12 Apr', '17:48', 'Time Adjustment', '12 Apr', '17:47', 'Time Adjustment', '12 Apr', '17:45', 'Time Adjustment', '12 Apr', '17:44', 'Time Adjustment', '12 Apr', '17:42', 'Time Adjustment', '12 Apr', '17:38', 'Time Adjustment', '12 Apr', '17:35', 'Time Adjustment', '12 Apr', '17:03', 'Time Adjustment', '12 Apr', '16:35', 'Time Adjustment', '12 Apr', '13:32', 'Time Adjustment', '12 Apr', '11:59', 'Time Adjustment', '12 Apr', '06:14', 'Time Adjustment', '12 Apr', '06:14', 'Record Created']), ({'flight_number': '692', 'flight_status': 'On time | Scheduled', 'departure_airport': 'TLV', 'arrival_airport': 'RHO', 'departure_date': '12-Apr-2020', 'arrival_date': '12-Apr-2020', 'operating_airline': '(BBG) Blue Bird Airways'}, ['9 Apr', '20:07', 'Record Created', '9 Apr', '20:07', 'Time Adjustment']), ({'flight_number': '752', 'flight_status': 'On time | Scheduled', 'departure_airport': 'TLV', 'arrival_airport': 'HER', 'departure_date': '12-Apr-2020', 'arrival_date': '12-Apr-2020', 'operating_airline': '(BBG) Blue Bird Airways'}, ['9 Apr', '20:07', 'Record Created', '9 Apr', '20:07', 'Time Adjustment']), ({'flight_number': '697', 'flight_status': 'On time | Scheduled', 'departure_airport': 'TLV', 'arrival_airport': 'BUS', 'departure_date': '12-Apr-2020', 'arrival_date': '12-Apr-2020', 'operating_airline': '(A9) Georgian Airways'}, ['9 Apr', '20:05', 'Record Created', '9 Apr', '20:05', 'Time Adjustment']), ({'flight_number': '322', 'flight_status': 'On time | Scheduled', 'departure_airport': 'TLV', 'arrival_airport': 'GYD', 'departure_date': '12-Apr-2020', 'arrival_date': '12-Apr-2020', 'operating_airline': '(J2) AZAL Azerbaijan Airlines'}, ['9 Apr', '20:11', 'Record Created', '9 Apr', '20:11', 'Time Adjustment']), ({'flight_number': '91', 'flight_status': 'Delayed by 1h 1m | Departed', 'departure_airport': 'TLV', 'arrival_airport': 'EWR', 'departure_date': '12-Apr-2020', 'arrival_date': '12-Apr-2020', 'operating_airline': '(UA) United Airlines'}, ['12 Apr', '18:40', 'Time Adjustment', '12 Apr', '17:21', 'Time Adjustment', '12 Apr', '16:43', 'Time Adjustment', '12 Apr', '16:03', 'Time Adjustment', '12 Apr', '10:38', 'Time Adjustment', '12 Apr', '10:27', 'Time Adjustment', '12 Apr', '10:12', 'Status Active', '12 Apr', '06:03', 'Gate Adjustment', '12 Apr', '01:31', 'Time Adjustment', '11 Apr', '20:26', 'Time Adjustment', '11 Apr', '08:04', 'Gate Adjustment', '10 Apr', '05:15', 'Time Adjustment', '9 Apr', '20:16', 'Time Adjustment', '9 Apr', '20:16', 'Record Created'])]    # # initialize databse:
+
 
     # # feed into airport list:
-    # db_airports()
+    # db_insert_airports()
     # feed data into
     db_feed_flights_data(flights_data)
 
