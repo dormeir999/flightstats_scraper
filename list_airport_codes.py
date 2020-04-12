@@ -21,8 +21,9 @@ def create_list_of_airports(filename):
     with open(filename, 'r', encoding="utf-8") as d:
         data = csv.reader(d)
         airports = [row for row in data]
-    print (airports[0])
-    return [airport for airport in airports if airport[1] == 'large_airport' or airport[1] == 'medium_airport']
+
+    return airports
+    # return [airport for airport in airports if airport[1] == 'large_airport' or airport[1] == 'medium_airport']
 
 
 def get_iata_code(airports):
