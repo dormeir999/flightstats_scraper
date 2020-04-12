@@ -133,23 +133,30 @@ def db_insert_events(events_data):
     """This function takes the a event data dictionary as an input and feeds it into the database table events.
     :param events_data: (flight_id, event_date, event_time, event_type)"""
 
-    length = len(events_data)
-
     # change type of data from bs4.elemnt.NavigableString to string
     events_data = tuple([str(e) for e in events_data])
 
+    length = len(events_data)
+    event_date = events_data[second_elem]
+    flight_id = events_data[first_elem]
+
     db, cur = db_create_cursor()
     table = 'events'
-    placeholder = ", ".join(["%s"] * length)
-    smt = "INSERT INTO {table} ({columns}) values ({values});".format(table=table,
-                                                                      columns='flight_id, event_date, event_time'
-                                                                              ', event_type',
-                                                                      values=placeholder)
 
-    try:
-        cur.execute(smt, events_data)
-    except mysql.connector.errors.IntegrityError as err:
-        print("Error while inserting events data: {}".format(err))
+    is_observation = db_select_event(flight_id, event_date)
+
+    if is_observation:
+        pass
+    else:
+        placeholder = ", ".join(["%s"] * length)
+        smt = "INSERT INTO {table} ({columns}) values ({values});".format(table=table,
+                                                                          columns='flight_id, event_date, event_time'
+                                                                                  ', event_type',
+                                                                          values=placeholder)
+        try:
+            cur.execute(smt, events_data)
+        except mysql.connector.errors.IntegrityError as err:
+            print("Error while inserting events data: {}".format(err))
     db.commit()
 
 
@@ -205,6 +212,16 @@ def db_select_flight(airport, flight_id):
     cur.execute(stmt)
     return cur.fetchall()
 
+def db_select_event(flight_id, event_date):
+
+    table = 'events'
+    db, cur = db_create_cursor()
+
+    stmt = f"SELECT * " \
+           f"FROM {table} " \
+           f"WHERE event_date='{event_date}' AND flight_id='{flight_id}';"
+    cur.execute(stmt)
+    return cur.fetchall()
 
 def main():
 
