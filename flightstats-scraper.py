@@ -2,7 +2,11 @@
 This scraper program receives a csv file of airports, scrape their recent departure flights data on flightstats.com,
 and returns available basic flight info (name, source and destination, time) and the flights registered events.
 
+Exercise: ITC - Data Mining
+Project: Flight_Scraper
 Authors: Itamar Bergfreund & Dor Meir
+
+Last Updated: 19.04.2020
 """
 
 # Pre-requisites
@@ -15,11 +19,12 @@ from next_page import collect_flight_links
 import os
 import argparse
 import pandas as pd
-from db_airports import db_feed_flights_data
+from db_flights import db_feed_flights_data
 import mysql.connector
 from list_airport_codes import create_list_of_airports
 
-# contant for testing
+
+# constant for testing
 TESTING_AIRPORT = 'ATL'
 
 # constants for flights web urls
@@ -87,13 +92,6 @@ PARSER_DESCRIB = """Insert the filename of airport details.
                     and other optional filters. If you want to add filters, add the
                     filter flag and than each parameter with space:
                     flightstats-scraper.py airport-codes.csv {-type TYPE -country COUNTRY1 COUNTRY2 "-max-feet NUM -min-feet NUM}"""
-
-# constants for DB:
-host="localhost"
-user="root"
-passwd='flightscraper'
-database='flight_departures'
-logfile = 'fs_log.log'
 
 
 def create_list_of_airports(filename, type, max_feet, min_feet, country, continent):

@@ -6,22 +6,22 @@ Authors: Itamar Bergfreund & Dor Meir
 """
 
 import mysql.connector
-from db_airports import db_create_cursor
+
 
 # for config file
-host="localhost"
-user="root"
-passwd='flightscraper'
-database='flight_departures'
+host = "localhost"
+user = "root"
+pwd = 'flightscraper'
+database = 'flight_departures'
 logfile = 'fs_log.log'
 
 
-def database_init():
-
+def database_init(usr, password):
+    """This function creates a database on you local host"""
     db = mysql.connector.connect(
         host=host,
-        user=user,
-        passwd=passwd
+        user=usr,
+        passwd=password
         )
     cur = db.cursor()
 
@@ -32,6 +32,20 @@ def database_init():
 
     db.commit()
 
+
+def db_create_cursor(usr, password):
+    """creates connection with database and creates a cursor
+    :return db, cur
+    """
+
+    db = mysql.connector.connect(
+        host=host,
+        user=usr,
+        passwd=password,
+        database=database)
+
+    cur = db.cursor()
+    return db, cur
 
 def create_tables():
     """this function create the tables in the database flight_departures"""
@@ -95,8 +109,8 @@ def create_tables():
 
 
 def main():
-    database_init()
-    create_tables()
+    database_init(user, pwd)
+    create_tables(user, pwd)
 
 if __name__ == '__main__':
     main()
