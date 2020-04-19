@@ -13,7 +13,7 @@ from list_airport_codes import get_airports
 from datetime import datetime
 from db_init import db_create_cursor
 import config_db as CFG
-import scra
+import scrape
 
 
 def db_feed_covid19_cities():
