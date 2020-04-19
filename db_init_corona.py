@@ -53,7 +53,7 @@ def create_tables_covid19():
     # corona per city table
     cur.execute("""CREATE TABLE IF NOT EXISTS covid19_city(
                 id INTEGER PRIMARY KEY AUTO_INCREMENT
-                ,location VARCHAR(50) 
+                ,location VARCHAR(200) 
                 , confirmed INTEGER
                 , dead INTEGER
                 , recovered INTEGER

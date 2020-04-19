@@ -25,8 +25,8 @@ def create_tables_flights():
                 , elevation_ft INTEGER
                 , continent VARCHAR(255)
                 , iso_country VARCHAR(5), FOREIGN KEY (iso_country) REFERENCES covid19_country(iso_country)
-                , iso_region VARCHAR(255), FOREIGN KEY (iso_region) REFERENCES covid19_region(iso_region)
-                , municipality VARCHAR(255), FOREIGN KEY (municipality) REFERENCES covid19_city(location)
+                , iso_region VARCHAR(255)
+                , municipality VARCHAR(255)
                 , gps_code VARCHAR(255)
                 , iata_code VARCHAR(10) PRIMARY KEY
                 , local_code VARCHAR(255)

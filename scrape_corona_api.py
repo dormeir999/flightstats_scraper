@@ -34,7 +34,7 @@ from list_airport_codes import get_airports
 # DATA_COLUMN_NAME = 'data'
 
 
-def get_iso_countries_data(airports):
+def get_covid_data_countries(airports):
     """
     Scrapes trackcorona.live/api for covid-19 data on countries, and pre-process it to match the iso codes in airports
     :param airports: a pandas DataFrame of airports data (ident, type, name, elevation, continent, iso country...)
@@ -59,7 +59,7 @@ def get_iso_countries_data(airports):
     return countries
 
 
-def get_iso_regions_data(airports):
+def get_covid_data_regions(airports):
     """
     Scrapes trackcorona.live/api for covid-19 data on provinces, and pre-process it to match the iso_regions in airports
     :param airports: a pandas DataFrame of airports data (ident, type, name, elevation, continent, iso country...)
@@ -107,7 +107,7 @@ def get_iso_regions_data(airports):
     return provinces
 
 
-def get_cities_data(airports):
+def get_covid_data_cities(airports):
     """
     Scrapes trackcorona.live/api for covid-19 data on cities
     :param airports: a pandas DataFrame of airports data (ident, type, name, elevation, continent, iso country...)
@@ -123,7 +123,7 @@ def get_cities_data(airports):
     return cities
 
 
-def get_iso_countries_travel_data(airports):
+def get_travel_restrictions(airports):
     """
     Scrapes trackcorona.live/api for covid-19 data on cities
     :param airports: a pandas DataFrame of airports data (ident, type, name, elevation, continent, iso country...)
@@ -148,12 +148,13 @@ def main():
     """
     airports = get_airports()
 
-    # return get_iso_countries_data(airports), get_iso_regions_data(airports), get_cities_data(airports), \
-    #        get_iso_countries_travel_data(airports)
-    print(get_iso_countries_data(airports)))
-    print(get_iso_regions_data(airports).columns)
-    print(get_cities_data(airports).columns)
-    print(get_iso_countries_travel_data(airports).columns)
+    # return get_covid_data_countries(airports), get_covid_data_regions(airports), get_covid_data_cities(airports), \
+    #        get_travel_restrictions(airports)
+
+    print(get_covid_data_countries(airports))
+    print(get_covid_data_regions(airports).columns)
+    print(get_covid_data_cities(airports).columns)
+    print(get_travel_restrictions(airports).columns)
 
 if __name__ == '__main__':
     main()
