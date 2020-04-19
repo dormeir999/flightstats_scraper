@@ -6,7 +6,11 @@ and returns 4 dataframes of Covid-19 data:
 * cities -latitude, longitude, confirmed cases, dead, recovered
 * iso_countries travel - travel limitation of iso_countries
 
+Module: ITC - Data Mining
+Project: Flight_Scraper
 Authors: Itamar Bergfreund & Dor Meir
+
+Last Updated: 19.04.2020
 """
 
 import requests
@@ -14,26 +18,20 @@ import pandas as pd
 import pycountry
 from hdx.location.country import Country
 import sys
+import config_scraper as CFG
+from list_airport_codes import get_airports
 
-AIRPORTS_FILE_NAME = "airport-codes.csv"
-FIRST_ITEM = 0
-
-# constants for scraping
-CITIES_URL = "https://www.trackcorona.live/api/cities"
-TRAVEL_URL = "https://www.trackcorona.live/api/travel"
-PROVINCE_URL = "https://www.trackcorona.live/api/provinces"
-COUNTRIES_URL = "https://www.trackcorona.live/api/countries"
-COUNTRIES_NO_AIRPORTS = ['VA', 'SM', 'AX', 'NA', 'LI']
-DATA_COLUMN_NAME = 'data'
-
-
-def get_airports_data():
-    """
-    Converts the airports data (ident, type, name, elevation, continent, iso country and region...) to csv,
-    and removes rows with null values for iata_code.
-    :return: a pandas DataFrame of airports data
-    """
-    return pd.read_csv(AIRPORTS_FILE_NAME).dropna(axis=FIRST_ITEM, how='any', subset=['iata_code'])
+#
+# AIRPORTS_FILE_NAME = "airport-codes.csv"
+# FIRST_ITEM = 0
+#
+# # constants for scraping
+# CITIES_URL = "https://www.trackcorona.live/api/cities"
+# TRAVEL_URL = "https://www.trackcorona.live/api/travel"
+# PROVINCE_URL = "https://www.trackcorona.live/api/provinces"
+# COUNTRIES_URL = "https://www.trackcorona.live/api/countries"
+# COUNTRIES_NO_AIRPORTS = ['VA', 'SM', 'AX', 'NA', 'LI']
+# DATA_COLUMN_NAME = 'data'
 
 
 def get_iso_countries_data(airports):
@@ -43,7 +41,7 @@ def get_iso_countries_data(airports):
     :return: a pandas DataFrame of countries Covid-19 data (latitude, longitude, confirmed cases, dead, recovered)
     """
     try:
-        countries = pd.DataFrame(requests.get(COUNTRIES_URL).json()[DATA_COLUMN_NAME])  # scrape the api
+        countries = pd.DataFrame(requests.get(CFG.COUNTRIES_URL).json()[CFG.DATA_COLUMN_NAME])  # scrape the api
     except requests.exceptions.RequestException as e:
         print(f"{e} , exiting the program...")
         sys.exit()
@@ -54,9 +52,9 @@ def get_iso_countries_data(airports):
     countries = countries[countries.iso_country.str.isalpha()]
     # Drop countries without airports (Vatican City, San Marino, Liechtenstein), \
     # and countries that their airports are not in airports-codes.csv (Åland Islands, Namibia)
-    countries = countries[~countries.iso_country.isin(COUNTRIES_NO_AIRPORTS)].drop(columns='location')
+    countries = countries[~countries.iso_country.isin(CFG.COUNTRIES_NO_AIRPORTS)].drop(columns='location')
     # Make sure all countries are in airport-codes.csv file:
-    assert (countries.iso_country.isin(airports.iso_country)).all()
+    # assert (countries.iso_country.isin(airports.iso_country)).all()
 
     return countries
 
@@ -68,7 +66,7 @@ def get_iso_regions_data(airports):
     :return: a pandas DataFrame of iso_regions Covid-19 data (latitude, longitude, confirmed cases, dead, recovered)
     """
     try:
-        provinces = pd.DataFrame(requests.get(PROVINCE_URL).json()[DATA_COLUMN_NAME])
+        provinces = pd.DataFrame(requests.get(CFG.PROVINCE_URL).json()[CFG.DATA_COLUMN_NAME])
     except requests.exceptions.RequestException as e:
         print(f"{e} , exiting the program...")
         sys.exit()
@@ -96,7 +94,7 @@ def get_iso_regions_data(airports):
     # Drop not found region
     provinces = provinces[provinces.location != "Provence-Alpes-Côte d'Azur"]
     # Check that all provinces location are indeed in airports DataFrame
-    assert provinces.location.isin(airports['provinces']).all()
+    # assert provinces.location.isin(airports['provinces']).all()
     # Resetting index before iterating on in
     provinces = provinces.reset_index(drop=True)
     # Convert every province to iso_region using airports['province']
@@ -115,8 +113,9 @@ def get_cities_data(airports):
     :param airports: a pandas DataFrame of airports data (ident, type, name, elevation, continent, iso country...)
     :return: a pandas DataFrame of iso_regions Covid-19 data (latitude, longitude, confirmed cases, dead, recovered)
     """
+
     try:
-        cities = pd.DataFrame(requests.get(CITIES_URL).json()[DATA_COLUMN_NAME])
+        cities = pd.DataFrame(requests.get(CFG.CITIES_URL).json()[CFG.DATA_COLUMN_NAME])
     except requests.exceptions.RequestException as e:
         print(f"{e} , exiting the program...")
         sys.exit()
@@ -130,11 +129,11 @@ def get_iso_countries_travel_data(airports):
     :param airports: a pandas DataFrame of airports data (ident, type, name, elevation, continent, iso country...)
     :return: a pandas DataFrame of iso_regions Covid-19 data (latitude, longitude, confirmed cases, dead, recovered)
     """
-    travel = pd.DataFrame(requests.get(TRAVEL_URL).json()[DATA_COLUMN_NAME])
+    travel = pd.DataFrame(requests.get(CFG.TRAVEL_URL).json()[CFG.DATA_COLUMN_NAME])
 
     iso_countries_codes = \
-        [Country.get_iso2_from_iso3(Country.get_iso3_country_code_fuzzy(x)[FIRST_ITEM]) if
-         Country.get_iso3_country_code_fuzzy(x)[FIRST_ITEM] else '' for x in travel['location']]
+        [Country.get_iso2_from_iso3(Country.get_iso3_country_code_fuzzy(x)[CFG.FIRST_ITEM]) if
+         Country.get_iso3_country_code_fuzzy(x)[CFG.FIRST_ITEM] else '' for x in travel['location']]
 
     travel['location'] = iso_countries_codes
     travel = travel.rename(columns={'location': 'iso_country'})
@@ -147,11 +146,14 @@ def main():
     Loads the airports data and uses it for scraping by iso_country, iso_region, cities and iso_country travel data
     :return: 4 dataframes of data about Covid-19: iso_country, iso_region, cities, and travel data of iso_country
     """
-    airports = get_airports_data()
+    airports = get_airports()
 
-    return get_iso_countries_data(airports), get_iso_regions_data(airports), get_cities_data(airports), \
-           get_iso_countries_travel_data(airports)
-
+    # return get_iso_countries_data(airports), get_iso_regions_data(airports), get_cities_data(airports), \
+    #        get_iso_countries_travel_data(airports)
+    print(get_iso_countries_data(airports)))
+    print(get_iso_regions_data(airports).columns)
+    print(get_cities_data(airports).columns)
+    print(get_iso_countries_travel_data(airports).columns)
 
 if __name__ == '__main__':
     main()

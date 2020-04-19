@@ -1,46 +1,47 @@
 """
 This file contains functions to feed in the flight data scraped
 
-Exercise: ITC - Data Mining
+Module: ITC - Data Mining
 Project: Flight_Scraper
 Authors: Itamar Bergfreund & Dor Meir
 
 Last Updated: 19.04.2020
 """
 
-
 import mysql.connector
-from list_airport_codes import create_list_of_airports
+from list_airport_codes import get_airports
 from datetime import datetime
 from db_init import db_create_cursor
 import config_db as CFG
 
 
-def db_insert_airports(filename='airport-codes.csv'):
+def db_insert_airports():
     """This function creates a table (airports) in the database flights_departures"""
 
-    airports = create_list_of_airports(filename)
+    airports = get_airports()
     db, cur = db_create_cursor()
 
-    query_create = "INSERT INTO airports (type, name, elevation_ft, continent, iso_country, iso_region, " \
-                   "municipality, gps_code, iata_code, local_code, longitude, latitude) " \
-                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    query = """INSERT INTO airports (type, name, elevation_ft, continent, iso_country, iso_region, 
+            municipality, gps_code, iata_code, local_code, longitude, latitude)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
-    for x, airport in enumerate(airports[CFG.second_elem:]):
+    print(type(airports))
 
+    for index, airport in airports.iterrows():
+        print(airport)
+        print('\n')
+        print(airport['name'])
+        print(tuple(airport))
         # if elevation is empty fill in None value
         if airport[CFG.elevation] == '':
             airport[CFG.elevation] = None
+        data = tuple(airport)[CFG.second_elem]
 
-        # if iata-code is empty fill skip
-        if airport[CFG.iata_code] != '' and airport[CFG.iata_code] != '0':
-            data = (tuple(airport[CFG.second_elem:CFG.coordinates]) + tuple(airport[CFG.coordinates].split(', ')))
-
-            # catch error if there are duplicates in the data set
-            try:
-                cur.execute(query_create, data)
-            except mysql.connector.errors.IntegrityError as err:
-                print("Error caught while updating airport table: {}".format(err))
+        # catch error if there are duplicates in the data set
+        try:
+            cur.execute(query, data)
+        except mysql.connector.errors.IntegrityError as err:
+            print("Error caught while updating airport table: {}".format(err))
     db.commit()
 
 
@@ -75,15 +76,15 @@ def db_insert_flights(flight_data):
     is_observation = db_select_flight(dep_airport, flight_id)
 
     if is_observation:
-        stmt = f"UPDATE {table} SET " \
-               f"{CFG.key_flight_status} = {flight_status}, " \
-               f' {CFG.key_dep_date} = {departure_date}, " \
-               f"{CFG.key_arr_airport} = {arrival_airport}, " \
-               f"{CFG.key_arr_date} = {arrival_date}, " \
-               f"{CFG.key_airline} = {operating_airline}, " \
-               f"{CFG.key_flight_number} = {flight_number} " \
-               f"WHERE " \
-               f"{CFG.key_dep_airport}={dep_airport} AND {CFG.key_flight_id}={flight_id};"
+        stmt = f"""UPDATE {table} SET 
+               f"{CFG.key_flight_status} = {flight_status}, 
+               f"'" {CFG.key_dep_date} = {departure_date}, 
+               f"{CFG.key_arr_airport} = {arrival_airport},
+               f"{CFG.key_arr_date} = {arrival_date}, 
+               f"{CFG.key_airline} = {operating_airline}, 
+               f"{CFG.key_flight_number} = {flight_number} 
+               f"WHERE 
+               f"{CFG.key_dep_airport}={dep_airport} AND {CFG.key_flight_id}={flight_id};"""
         cur.execute(stmt)
 
     else:
@@ -142,7 +143,7 @@ def create_flight_id(flight_data):
     """
 
     flight_data[CFG.key_flight_id] = '_'.join([flight_data[CFG.key_airline], flight_data[CFG.key_flight_number],
-                                           flight_data[CFG.key_dep_date]])
+                                               flight_data[CFG.key_dep_date]])
 
     # create date from string:
     flight_data[CFG.key_dep_date] = datetime.strptime(flight_data[CFG.key_dep_date], '%d-%b-%Y')
@@ -164,12 +165,12 @@ def db_feed_flights_data(flights_data):
         flight_data = create_flight_id(flight_data)
 
         # prepare events_data:
-        for i in range(0, len(events_data), length_of_events):
+        for i in range(0, len(events_data), CFG.length_of_events):
             now = datetime.now()
-            event_date = datetime.strptime(events_data[i] + '-' + str(now.year) + '-' + events_data[i+1]
+            event_date = datetime.strptime(events_data[i] + '-' + str(now.year) + '-' + events_data[i + 1]
                                            , '%d %b-%Y-%H:%M')
 
-            event_data = (flight_data[CFG.key_flight_id] , event_date, events_data[i + CFG.second_elem],
+            event_data = (flight_data[CFG.key_flight_id], event_date, events_data[i + CFG.second_elem],
                           events_data[i + CFG.third_elem])
 
             # inserting event_data
@@ -216,7 +217,6 @@ def db_select_event(flight_id, event_date):
 
 
 def main():
-
     # some test data
     flights_data = [({CFG.key_flight_number: '425', CFG.key_flight_status: 'On time | Scheduled',
                       CFG.key_dep_airport: 'TLV', CFG.key_arr_airport: 'ETM', CFG.key_dep_date: '12-Apr-2020',
@@ -224,7 +224,7 @@ def main():
                      ['12 Apr', '05:23', 'Equipment Adjustment', '9 Apr', '20:04', 'Record Created', '9 Apr', '20:04',
                       'Time Adjustment']),
                     ({CFG.key_flight_number: '756', CFG.key_flight_status: 'On time | Scheduled',
-                      CFG.key_dep_airport: 'TLV', CFG.key_arr_airport: 'HER',CFG.key_dep_date: '12-Apr-2020',
+                      CFG.key_dep_airport: 'TLV', CFG.key_arr_airport: 'HER', CFG.key_dep_date: '12-Apr-2020',
                       CFG.key_arr_date: '12-Apr-2020', CFG.key_airline: '(BBG) Blue Bird Airways'},
                      ['9 Apr', '20:07', 'Record Created', '9 Apr', '20:07', 'Time Adjustment']),
                     ({CFG.key_flight_number: '754', CFG.key_flight_status: 'On time | Scheduled',
@@ -233,7 +233,7 @@ def main():
                      ['9 Apr', '20:07', 'Record Created', '9 Apr', '20:07', 'Time Adjustment'])]
 
     # # feed into airport list:
-    # db_insert_airports()
+    db_insert_airports()
     # feed data into
     db_feed_flights_data(flights_data)
 

@@ -15,13 +15,13 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 import re
-from next_page import collect_flight_links
+from scrape_next_page import collect_flight_links
 import os
 import argparse
 import pandas as pd
-from db_flights import db_feed_flights_data
+from db_feed_flights import db_feed_flights_data
 import mysql.connector
-from list_airport_codes import create_list_of_airports
+from list_airport_codes import get_airports
 
 
 # constant for testing
@@ -91,7 +91,7 @@ ISO_COUNTRIES_CODES = ['US', 'PR', 'MH', 'MP', 'GU', 'SO', 'AQ', 'GB', 'PG', 'AD
 PARSER_DESCRIB = """Insert the filename of airport details.
                     and other optional filters. If you want to add filters, add the
                     filter flag and than each parameter with space:
-                    flightstats-scraper.py airport-codes.csv {-type TYPE -country COUNTRY1 COUNTRY2 "-max-feet NUM -min-feet NUM}"""
+                    scrape_flightstats.py airport-codes.csv {-type TYPE -country COUNTRY1 COUNTRY2 "-max-feet NUM -min-feet NUM}"""
 
 
 def create_list_of_airports(filename, type, max_feet, min_feet, country, continent):
@@ -335,7 +335,7 @@ def scrape_flights(filename, type, max_feet, min_feet, country, continent):
     :param filename:
     :return: flights_data for each airport in the list
     """
-    list_of_airports = create_list_of_airports(filename, type, max_feet, min_feet, country, continent)
+    list_of_airports = get_airports(filename, type, max_feet, min_feet, country, continent)
     print("Scraping the airports in the " + str(filename) + ":")
     print(list_of_airports)
     flights_data = []
