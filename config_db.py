@@ -8,12 +8,11 @@ Authors: Itamar Bergfreund & Dor Meir
 Last Updated: 19.04.2020
 """
 
-
 # DB specifics:
 host = "localhost"
 user = "root"
 pwd = 'flightscraper'
-database = 'flights_data'
+database = 'flight_data'
 logfile = 'fs_log.log'
 
 # KEYS
@@ -30,6 +29,7 @@ KEY_event_time = 'event_time'
 KEY_even_type = 'event_type'
 KEY_travel_restrictions = 'travel_restrictions'
 KEY_country = 'iso_country'
+KEY_municipality = 'municipality'
 
 # MAGIC NUMBERS
 updated = 5

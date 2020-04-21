@@ -25,7 +25,6 @@ def db_insert_airports():
             municipality, gps_code, iata_code, local_code, longitude, latitude)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
-    print(type(airports))
 
     for index, airport in airports.iterrows():
 
@@ -42,6 +41,51 @@ def db_insert_airports():
     db.commit()
 
 
+def db_insert_conversion_tables():
+    """This fills airports and  in the database flights_departures"""
+
+    airports = get_airports()
+    db, cur = db_create_cursor()
+
+    # city
+    cities = airports['municipality'].dropna().unique()
+    query = """INSERT INTO city_airport (municipality) VALUES (%s);"""
+
+    for city in cities:
+        print(city)
+        # catch error if there are duplicates in the data set
+        try:
+            cur.execute(query, [city])
+        except mysql.connector.errors.IntegrityError as err:
+            print("Error caught while updating city_airport table: {}".format(err))
+
+
+    # region
+    regions = airports['iso_region'].dropna().unique()
+    query = """INSERT INTO region_airport (iso_region) VALUES (%s);"""
+
+    for region in regions:
+        # catch error if there are duplicates in the data set
+        try:
+            cur.execute(query, [region])
+        except mysql.connector.errors.IntegrityError as err:
+            print("Error caught while updating city_airport table: {}".format(err))
+
+    # country
+    countries = airports['iso_country'].dropna().unique()
+    query = """INSERT INTO region_airport (iso_region) VALUES (%s);"""
+
+    for country in countries:
+        # catch error if there are duplicates in the data set
+        try:
+            cur.execute(query, [country])
+        except mysql.connector.errors.IntegrityError as err:
+            print("Error caught while updating city_airport table: {}".format(err))
+
+    db.commit()
+
+
+
 def db_insert_flights(flight_data):
     """This function takes the a flight data dictionary as an input and feeds it into the database table departures.
     :param flight_data: e.g.
@@ -54,7 +98,7 @@ def db_insert_flights(flight_data):
                     'operating_airline': '(6H) Israir Airlines'}"""
 
     table = 'departures'
-    print(flight_data)
+
     dep_airport = flight_data[CFG.KEY_dep_airport]
     flight_id = flight_data[CFG.KEY_flight_id]
     flight_status = flight_data[CFG.KEY_flight_status]
@@ -161,6 +205,9 @@ def db_feed_flights_data(flights_data):
         flight_data = flight_data[CFG.first_elem]
         flight_data = create_flight_id(flight_data)
 
+        # inserting flight data
+        db_insert_flights(flight_data)
+
         # prepare events_data:
         for i in range(0, len(events_data), CFG.length_of_events):
             now = datetime.now()
@@ -173,8 +220,6 @@ def db_feed_flights_data(flights_data):
             # inserting event_data
             db_insert_events(event_data)
 
-        # inserting flight data
-        db_insert_flights(flight_data)
 
 
 def db_select_flight(airport, flight_id):
@@ -231,9 +276,9 @@ def main():
 
     # # feed into airport list:
     # db_insert_airports()
-    # feed data into
-    db_feed_flights_data(flights_data)
-
+    # # feed data into
+    # db_feed_flights_data(flights_data)
+    # db_insert_conversion_tables()
 
 if __name__ == '__main__':
     main()

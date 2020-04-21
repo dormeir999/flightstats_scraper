@@ -32,7 +32,6 @@ def db_feed_covid19_cities(df):
         # todo: get NAN values into database as for now nan values are represented by 0
         data.fillna(0, inplace=True)
         food = tuple(data)
-
         # catch error if there are duplicates in the data set
         try:
             cur.execute(query, food)
@@ -62,7 +61,7 @@ def db_feed_covid19_countries(df):
         try:
             cur.execute(query, food)
         except mysql.connector.errors.IntegrityError as err:
-            print("Error caught while updating covid19_city table: {}".format(err))
+            print("Error caught while updating covid19_country table: {}".format(err))
 
     db.commit()
 
@@ -87,38 +86,34 @@ def db_feed_covid19_region(df):
         try:
             cur.execute(query, food)
         except mysql.connector.errors.IntegrityError as err:
-            print("Error caught while updating covid19_city table: {}".format(err))
+            print("Error caught while updating covid19_region table: {}".format(err))
 
     db.commit()
 
 
-#todo: there is still a bug i the functions db_feed_covid19_travel_restrictions: probalby its because of special
-# characters in the text for travel restrictions.
+def db_feed_covid19_travel_restrictions(df):
+    """
+    This function feeds the table covid19_country with the travel restrictions scraped
+    :param df: dataframe created with an API request
+    :return: None
+    """
 
-# def db_feed_covid19_travel_restrictions(df):
-#     """
-#     This function feeds the table covid19_country with the travel restrictions scraped
-#     :param df: dataframe created with an API request
-#     :return: None
-#     """
-#
-#     db, cur = db_create_cursor()
-#     table = 'covid19_country'
-#
-#     for index, country in df.iterrows():
-#
-#         # check for last entry in covid19_country table:
-#         is_observation = db_select_country_data(country[CFG.KEY_country])
-#         print(country['data'])
-#         print(type(is_observation[CFG.first_elem][CFG.updated]))
-#         if is_observation:
-#             stmt = f"""UPDATE {table} SET
-#                    travel_restrictions='{country['data']}'
-#                    WHERE
-#                    '{CFG.KEY_country}'='{country[CFG.KEY_country]}' AND
-#                    updated='{is_observation[CFG.first_elem][CFG.updated]}';"""
-#
-#             cur.execute(stmt)
+    db, cur = db_create_cursor()
+    table = 'covid19_country'
+
+    for index, country in df.iterrows():
+
+        # check for last entry in covid19_country table:
+        is_observation = db_select_country_data(country[CFG.KEY_country])
+        print(country['data'])
+        # print(type(is_observation[CFG.first_elem][CFG.updated]))
+        if is_observation:
+            stmt = f"""UPDATE {table} SET
+                   travel_restrictions='{country['data']}'
+                   WHERE
+                   '{CFG.KEY_country}'='{country[CFG.KEY_country]}' AND
+                   updated='{is_observation[CFG.first_elem][CFG.updated]}';"""
+            cur.execute(stmt)
 
 
 def db_select_country_data(country):
@@ -148,12 +143,12 @@ def main():
     df_cities = covid.get_covid_data_cities(airports)
     df_regions = covid.get_covid_data_regions(airports)
     df_countries = covid.get_covid_data_countries(airports)
-    # df_tr = covid.get_travel_restrictions(airports)
+    df_tr = covid.get_travel_restrictions(airports)
 
     db_feed_covid19_countries(df_countries)
     db_feed_covid19_region(df_regions)
     db_feed_covid19_cities(df_cities)
-    # db_feed_covid19_travel_restrictions(df_tr)
+    db_feed_covid19_travel_restrictions(df_tr)
     print('done')
 
 

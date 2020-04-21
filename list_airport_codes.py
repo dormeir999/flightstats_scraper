@@ -23,7 +23,14 @@ def get_airports():
     new = df[CFG.KEY_COORD].str.split(", ", n=1, expand=True)
     df[CFG.KEY_longitude] = new[CFG.FIRST_ITEM]
     df[CFG.KEY_latitude] = new[CFG.SECOND_ITEM]
-    df.drop(columns=[CFG.KEY_COORD], inplace=True)
+    df = df.drop([CFG.KEY_COORD], axis=1)
+    df['iata_code'].dropna(inplace=True)
+    df = df[df['type'] != 'closed']
+    df = df[df['type'] != 'seaplane_base']
+    df = df[df['type'] != 'heliport']
+
+    df = df[df['iata_code'] != '0']
+
     return df
 
 
@@ -38,9 +45,10 @@ def get_iata_code():
 
 def main():
 
-    print(get_airports().columns)
-    print(get_iata_code())
-
+    df = get_airports()
+    print(len(get_airports()))
+    print(df[df['iata_code'] != 0])
+    print(df['type'].value_counts())
 
 if __name__ == "__main__":
     main()

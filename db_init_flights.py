@@ -24,32 +24,18 @@ def create_tables_flights():
                 ,  name VARCHAR(255)
                 , elevation_ft INTEGER
                 , continent VARCHAR(255)
-                , iso_country VARCHAR(5), FOREIGN KEY (iso_country) REFERENCES covid19_country(iso_country)
+                , iso_country VARCHAR(5)
                 , iso_region VARCHAR(255)
                 , municipality VARCHAR(255)
                 , gps_code VARCHAR(255)
-                , iata_code VARCHAR(10) PRIMARY KEY
+                , iata_code VARCHAR(5) PRIMARY KEY
                 , local_code VARCHAR(255)
                 , longitude FLOAT
                 , latitude FLOAT)""")
 
-    # events table
-    cur.execute("""CREATE TABLE IF NOT EXISTS events(
-                id INTEGER(255) PRIMARY KEY AUTO_INCREMENT
-                , flight_id VARCHAR(255)
-                , event_time TIME
-                , event_date DATE
-                , event_type VARCHAR(255))""")
-
-    try:
-        cur.execute("CREATE INDEX idx_flight ON events(flight_id)")
-    except mysql.connector.errors.ProgrammingError as err:
-        print(err)
-
     # departures table
     cur.execute("""CREATE TABLE IF NOT EXISTS departures(
-                id INTEGER PRIMARY KEY AUTO_INCREMENT
-                , flight_id VARCHAR(255), FOREIGN KEY (flight_id) REFERENCES events(flight_id)
+                flight_id VARCHAR(255) PRIMARY KEY
                 , departure_airport VARCHAR(10), FOREIGN KEY (departure_airport) REFERENCES airports(iata_code)
                 , airline VARCHAR(50)
                 , flight_number INTEGER
@@ -60,16 +46,24 @@ def create_tables_flights():
                 , operating_airline VARCHAR(255))""")
 
     try:
-        cur.execute("CREATE UNIQUE INDEX idx_flight ON departures(flight_id)")
+        cur.execute("CREATE UNIQUE INDEX idx_flight_id ON departures(flight_id)")
     except mysql.connector.errors.ProgrammingError as err:
         print(err)
 
-    # # event_types
-    # cur.execute("CREATE TABLE IF NOT EXISTS events_type("
-    #             "id int PRIMARY KEY AUTO_INCREMENT"
-    #             ", event_date DATE"
-    #             ", event_time TIME"
-    #             ", event_type VARCHAR(50))")
+    # events table
+    cur.execute("""CREATE TABLE IF NOT EXISTS events(
+                id INTEGER(255) PRIMARY KEY AUTO_INCREMENT
+                , flight_id VARCHAR(255), FOREIGN KEY (flight_id) REFERENCES departures(flight_id)
+                , event_time TIME
+                , event_date DATE
+                , event_type VARCHAR(255))""")
+
+    try:
+        cur.execute("CREATE INDEX idx_flight_id_event ON events(flight_id)")
+    except mysql.connector.errors.ProgrammingError as err:
+        print(err)
+
+
 
     db.commit()
 

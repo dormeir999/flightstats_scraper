@@ -9,7 +9,6 @@ Authors: Itamar Bergfreund & Dor Meir
 Last Updated: 19.04.2020
 """
 
-
 # constants used for html parsing
 HTML_PARSER_STR = 'html.parser'
 FLIGHT_TRACKER_STR = 'h2'
@@ -25,6 +24,8 @@ DATE_CLASS = "date"
 FLIGHT_CARRIER_STRING = "h1"
 FLIGHT_CARRIER_CLASS = "carrier-text-style"
 FLIGHT_CARRIER_SPACE_STR = " "
+
+# magic numbers
 FIRST_ITEM = 0
 SECOND_ITEM = 1
 THIRD_ITEM = 2

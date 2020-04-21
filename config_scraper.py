@@ -73,7 +73,6 @@ DATA_COLUMN_NAME = 'data'
 
 
 # KEYS
-
 KEY_iata_code = 'iata_code'
 KEY_COORD = 'coordinates'
 KEY_longitude = 'longitude'

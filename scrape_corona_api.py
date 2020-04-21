@@ -156,5 +156,6 @@ def main():
     print(get_covid_data_cities(airports).columns)
     print(get_travel_restrictions(airports).columns)
 
+
 if __name__ == '__main__':
     main()
