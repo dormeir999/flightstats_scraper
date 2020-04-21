@@ -1,5 +1,8 @@
 pycountry
 pandas
 requests
-sys
 hdx-python-country
+bs4
+selenium
+mysql-connector-python-rf
+chromedriver 81
