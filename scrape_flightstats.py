@@ -105,18 +105,18 @@ def create_list_of_airports(filename, type, max_feet, min_feet, country, contine
     :param continent: continents to filter
     :return: list of airports to scrape
     """
-    try:
+    if os.path.exists(filename):
         airports = drop_nan_rows(pd.read_csv(filename), IATA_STR)  # Read airports file, drop airports without  \
         # iata code (since we can't scrape them from flightstats)
-        airports_iata = filter_airports_iata(airports, type, max_feet, min_feet, country, continent)
-        return airports_iata.values  # Return a list of filtered airports
-    except FileNotFoundError:
-        print("The list of airports file " + str(filename) + " is not there - exiting the program")
+        try:
+            airports_iata = filter_airports_iata(airports, type, max_feet, min_feet, country, continent)
+            return airports_iata.values  # Return a list of filtered airports
+        except UnicodeError:
+            print("The list of airports file " + str(filename) + " is not in the write csv form - exiting the program")
+            sys.exit()
+    else:
+        print(f"The {filename} doesn't exist, exiting the program...")
         sys.exit()
-    except UnicodeError:
-        print("The list of airports file " + str(filename) + " is not in the write csv form - exiting the program")
-        sys.exit()
-
 
 def filter_airports_iata(airports, type, max_feet, min_feet, country, continent):
     """
@@ -170,10 +170,7 @@ def get_html_links(soup, only_one_page):
     """
     
     # Get all the html's links, including the detailed websites on flights links
-    if only_one_page:  # if only one page, the soup structure is different...
-        unparsed_list_of_links = list(soup.children)[1].find_all(HTML_LINKS_STR1)
-    else:  # use the soup structure of multiple pages
-        unparsed_list_of_links = list(soup.children)[0].find_all(HTML_LINKS_STR1)
+    unparsed_list_of_links = list(soup.children)[only_one_page].find_all(HTML_LINKS_STR1)
 
     return [str(link.get(HTML_LINKS_STR2)) for link in unparsed_list_of_links]
 

@@ -1,7 +1,7 @@
 """
 This config-file holds variables and magic numbers used by all database scripts -> db_*.py
 
-Modul: ITC - Data Mining
+Module: ITC - Data Mining
 Project: Flight_Scraper
 Authors: Itamar Bergfreund & Dor Meir
 
