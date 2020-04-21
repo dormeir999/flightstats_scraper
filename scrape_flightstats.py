@@ -351,21 +351,21 @@ def main():
     # test scraper
     #test_get_flights_links()
 
-    scrape_flights('airport-codes.csv', ['large_airport'], 1000, 0, ['IL'], CONTINENTS_2DIGITS)
+    # scrape_flights('airport-codes.csv', ['large_airport'], 1000, 0, ['IL'], CONTINENTS_2DIGITS)
 
-    # # arguments parsing
-    # parser = argparse.ArgumentParser(description=PARSER_DESCRIB)
-    # parser.add_argument("filename", type=str)
-    # parser.add_argument("-type", type=str,  nargs='+', choices=['heliport', 'small_airport', 'closed', 'seaplane_base',
-    #                                                   'balloonport', 'medium_airport', 'large_airport'])
-    # parser.add_argument("-country", type=str, nargs='+', choices=ISO_COUNTRIES_CODES)
-    # parser.add_argument("-continent", type=str, nargs='+', choices=CONTINENTS_2DIGITS)
-    # parser.add_argument("-maxfeet", type=int)
-    # parser.add_argument("-minfeet", type=int)
-    # args = parser.parse_args()
-    #
-    # # running the scraper
-    # flights_data = scrape_flights(args.filename, args.type, args.maxfeet, args.minfeet, args.country, args.continent)
+    # arguments parsing
+    parser = argparse.ArgumentParser(description=PARSER_DESCRIB)
+    parser.add_argument("filename", type=str)
+    parser.add_argument("-type", type=str,  nargs='+', choices=['heliport', 'small_airport', 'closed', 'seaplane_base',
+                                                      'balloonport', 'medium_airport', 'large_airport'])
+    parser.add_argument("-country", type=str, nargs='+', choices=ISO_COUNTRIES_CODES)
+    parser.add_argument("-continent", type=str, nargs='+', choices=CONTINENTS_2DIGITS)
+    parser.add_argument("-maxfeet", type=int)
+    parser.add_argument("-minfeet", type=int)
+    args = parser.parse_args()
+
+    # running the scraper
+    flights_data = scrape_flights(args.filename, args.type, args.maxfeet, args.minfeet, args.country, args.continent)
 
     return flights_data
 
