@@ -15,7 +15,6 @@ import requests
 from bs4 import BeautifulSoup
 
 
-
 def collect_flight_links(url):
     """
     This function collects links of each flight from the airport specific web page using pagination.
@@ -27,7 +26,11 @@ def collect_flight_links(url):
     WD_WAIT_s = 5
     num_pages = get_number_of_pages(url)
     html_list = []
-    driver = webdriver.Chrome()
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    driver = webdriver.Chrome('/usr/bin/chromedriver',chrome_options=chrome_options)
     driver.get(url)
     if num_pages == 0:
         return html_list, num_pages
