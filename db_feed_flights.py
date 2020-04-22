@@ -52,16 +52,16 @@ def db_insert_conversion_tables():
     airports = get_airports()
     db, cur = db_create_cursor()
 
-    # # city
-    # cities = airports['municipality'].dropna().unique()
-    # query = """INSERT INTO city_airports (municipality) VALUES (%s);"""
-    #
-    # for city in cities:
-    #     # catch error if there are duplicates in the data set
-    #     try:
-    #         cur.execute(query, [city])
-    #     except mysql.connector.errors.IntegrityError as err:
-    #         print("Error caught while updating country_airports table: {}".format(err))
+    # city
+    cities = airports['municipality'].dropna().unique()
+    query = """INSERT INTO city_airports (municipality) VALUES (%s);"""
+
+    for city in cities:
+        # catch error if there are duplicates in the data set
+        try:
+            cur.execute(query, [city])
+        except mysql.connector.errors.IntegrityError as err:
+            print("Error caught while updating country_airports table: {}".format(err))
 
 
     # region
@@ -281,7 +281,7 @@ def main():
     # # feed into airport list:
     # # feed data into
     # db_feed_flights_data(flights_data)
-    # db_insert_conversion_tables()
+    db_insert_conversion_tables()
     db_insert_airports()
 
 if __name__ == '__main__':
