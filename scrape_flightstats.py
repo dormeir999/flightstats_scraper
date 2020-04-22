@@ -331,7 +331,7 @@ def scrape_flights(filename, type, max_feet, min_feet, country, continent):
     :param filename:
     :return: flights_data for each airport in the list
     """
-    list_of_airports = create_list_of_airports(filename, type, max_feet, min_feet, country, continent)
+    list_of_airports = get_airports(filename, type, max_feet, min_feet, country, continent)
     print("Scraping the airports in the " + str(filename) + ":")
     print(list_of_airports)
     flights_data = []
