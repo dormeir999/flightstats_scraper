@@ -25,12 +25,12 @@ def create_conversion_tables():
     # airports(iata_code),
 
     #  country - airports conversion table:
-    cur.execute("""CREATE TABLE IF NOT EXISTS country_airport(
+    cur.execute("""CREATE TABLE IF NOT EXISTS country_airports(
 
                     iso_country VARCHAR(255) PRIMARY KEY
                     )""")
     try:
-        cur.execute("CREATE INDEX idx_country ON country_airport(iso_country)")
+        cur.execute("CREATE INDEX idx_country ON country_airports(iso_country)")
     except mysql.connector.errors.ProgrammingError as err:
         print(err)
 
@@ -43,11 +43,11 @@ def create_conversion_tables():
     # airports(iata_code),
 
     # region - airports conversion table:
-    cur.execute("""CREATE TABLE IF NOT EXISTS region_airport(
+    cur.execute("""CREATE TABLE IF NOT EXISTS region_airports(
                     iso_region VARCHAR(255) PRIMARY KEY
                     )""")
     try:
-        cur.execute("CREATE INDEX idx_region ON region_airport(iso_region)")
+        cur.execute("CREATE INDEX idx_region ON region_airports(iso_region)")
     except mysql.connector.errors.ProgrammingError as err:
         print(err)
 
@@ -60,11 +60,11 @@ def create_conversion_tables():
     # airports(iata_code)
 
     # city - airports conversion table:
-    cur.execute("""CREATE TABLE IF NOT EXISTS city_airport(
+    cur.execute("""CREATE TABLE IF NOT EXISTS city_airports(
                     municipality VARCHAR(255) PRIMARY KEY
                     )""")
     try:
-        cur.execute("CREATE INDEX idx_municipality ON city_airport(municipality)")
+        cur.execute("CREATE INDEX idx_municipality ON city_airports(municipality)")
     except mysql.connector.errors.ProgrammingError as err:
         print(err)
 
@@ -77,14 +77,14 @@ def create_tables_covid19():
     # corona per country table
     cur.execute("""CREATE TABLE IF NOT EXISTS covid19_country(
                 id INTEGER PRIMARY KEY AUTO_INCREMENT 
-                , iso_country VARCHAR(10), FOREIGN KEY (iso_country) REFERENCES country_airport(iso_country)
+                , iso_country VARCHAR(10), FOREIGN KEY (iso_country) REFERENCES country_airports(iso_country)
                 , confirmed INTEGER
                 , dead INTEGER
                 , recovered INTEGER
                 , updated TIMESTAMP
                 , longitude FLOAT
                 , latitude FLOAT
-                ,  VARCHAR(2000))""")
+                , travel_restrictions VARCHAR(2000))""")
 
     try:
         cur.execute("CREATE INDEX idx_country_ ON covid19_country(iso_country)")
@@ -94,7 +94,7 @@ def create_tables_covid19():
     # corona per region table
     cur.execute("""CREATE TABLE IF NOT EXISTS covid19_region(
                 id INTEGER PRIMARY KEY AUTO_INCREMENT
-                , iso_region VARCHAR(50), FOREIGN KEY (iso_region) REFERENCES region_airport(iso_region)
+                , iso_region VARCHAR(50), FOREIGN KEY (iso_region) REFERENCES region_airports(iso_region)
                 , confirmed INTEGER
                 , dead INTEGER
                 , recovered INTEGER
@@ -110,7 +110,7 @@ def create_tables_covid19():
     # corona per city table
     cur.execute("""CREATE TABLE IF NOT EXISTS covid19_city(
                 id INTEGER PRIMARY KEY AUTO_INCREMENT
-                , location VARCHAR(200), FOREIGN KEY (location) REFERENCES city_airport(municipality)
+                , location VARCHAR(200), FOREIGN KEY (location) REFERENCES city_airports(municipality)
                 , confirmed INTEGER
                 , dead INTEGER
                 , recovered INTEGER
@@ -130,6 +130,7 @@ def create_tables_covid19():
 def main():
 
     create_conversion_tables()
+    # create_conversion_tables()
     create_tables_covid19()
 
 

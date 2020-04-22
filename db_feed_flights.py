@@ -33,6 +33,7 @@ def db_insert_airports():
             airport[CFG.elevation] = None
         airport.fillna(0, inplace=True)
         data = tuple(airport)[CFG.second_elem:]
+        print(data)
         # catch error if there are duplicates in the data set
         try:
             cur.execute(query, data)
@@ -49,31 +50,30 @@ def db_insert_conversion_tables():
 
     # city
     cities = airports['municipality'].dropna().unique()
-    query = """INSERT INTO city_airport (municipality) VALUES (%s);"""
+    query = """INSERT INTO city_airports (municipality) VALUES (%s);"""
 
     for city in cities:
-        print(city)
         # catch error if there are duplicates in the data set
         try:
             cur.execute(query, [city])
         except mysql.connector.errors.IntegrityError as err:
-            print("Error caught while updating city_airport table: {}".format(err))
+            print("Error caught while updating country_airports table: {}".format(err))
 
 
     # region
     regions = airports['iso_region'].dropna().unique()
-    query = """INSERT INTO region_airport (iso_region) VALUES (%s);"""
+    query = """INSERT INTO region_airports (iso_region) VALUES (%s);"""
 
     for region in regions:
         # catch error if there are duplicates in the data set
         try:
             cur.execute(query, [region])
         except mysql.connector.errors.IntegrityError as err:
-            print("Error caught while updating city_airport table: {}".format(err))
+            print("Error caught while updating region_airports table: {}".format(err))
 
     # country
     countries = airports['iso_country'].dropna().unique()
-    query = """INSERT INTO region_airport (iso_region) VALUES (%s);"""
+    query = """INSERT INTO country_airports (iso_country) VALUES (%s);"""
 
     for country in countries:
         # catch error if there are duplicates in the data set
@@ -275,10 +275,10 @@ def main():
                      ['9 Apr', '20:07', 'Record Created', '9 Apr', '20:07', 'Time Adjustment'])]
 
     # # feed into airport list:
-    # db_insert_airports()
     # # feed data into
     # db_feed_flights_data(flights_data)
     # db_insert_conversion_tables()
+    db_insert_airports()
 
 if __name__ == '__main__':
     main()

@@ -57,10 +57,12 @@ def db_feed_covid19_countries(df):
         # todo: get NAN values into database as for now nan values are represented by 0
         data.fillna(0, inplace=True)
         food = tuple(data)
+
         # catch error if there are duplicates in the data set
         try:
             cur.execute(query, food)
         except mysql.connector.errors.IntegrityError as err:
+            print(food)
             print("Error caught while updating covid19_country table: {}".format(err))
 
     db.commit()
@@ -86,6 +88,7 @@ def db_feed_covid19_region(df):
         try:
             cur.execute(query, food)
         except mysql.connector.errors.IntegrityError as err:
+            print(food)
             print("Error caught while updating covid19_region table: {}".format(err))
 
     db.commit()
@@ -105,11 +108,11 @@ def db_feed_covid19_travel_restrictions(df):
 
         # check for last entry in covid19_country table:
         is_observation = db_select_country_data(country[CFG.KEY_country])
-        print(country['data'])
+        data = (country['data'].replace("\'", ''))
         # print(type(is_observation[CFG.first_elem][CFG.updated]))
         if is_observation:
             stmt = f"""UPDATE {table} SET
-                   travel_restrictions='{country['data']}'
+                   travel_restrictions='{data}'
                    WHERE
                    '{CFG.KEY_country}'='{country[CFG.KEY_country]}' AND
                    updated='{is_observation[CFG.first_elem][CFG.updated]}';"""
@@ -140,15 +143,20 @@ def main():
 
     airports = get_airports()
 
-    df_cities = covid.get_covid_data_cities(airports)
+    # df_cities = covid.get_covid_data_cities(airports)
     df_regions = covid.get_covid_data_regions(airports)
     df_countries = covid.get_covid_data_countries(airports)
     df_tr = covid.get_travel_restrictions(airports)
 
     db_feed_covid19_countries(df_countries)
+    print('countries done')
     db_feed_covid19_region(df_regions)
-    db_feed_covid19_cities(df_cities)
+    print('regions done')
+    # db_feed_covid19_cities(df_cities)
+    print('cities done')
     db_feed_covid19_travel_restrictions(df_tr)
+    print('travel restrictions done')
+
     print('done')
 
 

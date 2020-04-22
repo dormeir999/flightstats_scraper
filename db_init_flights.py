@@ -10,7 +10,6 @@ Last Updated: 19.04.2020
 
 import mysql.connector
 from db_init import db_create_cursor
-import config_db as CFG
 
 
 def create_tables_flights():
@@ -24,9 +23,9 @@ def create_tables_flights():
                 ,  name VARCHAR(255)
                 , elevation_ft INTEGER
                 , continent VARCHAR(255)
-                , iso_country VARCHAR(5)
-                , iso_region VARCHAR(255)
-                , municipality VARCHAR(255)
+                , iso_country VARCHAR(5), FOREIGN KEY (iso_country) REFERENCES country_airports(iso_country)
+                , iso_region VARCHAR(255), FOREIGN KEY (iso_region) REFERENCES region_airports(iso_region)
+                , municipality VARCHAR(255), FOREIGN KEY (municipality) REFERENCES city_airports(municipality)
                 , gps_code VARCHAR(255)
                 , iata_code VARCHAR(5) PRIMARY KEY
                 , local_code VARCHAR(255)
