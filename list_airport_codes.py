@@ -46,9 +46,7 @@ def get_iata_code():
 def main():
 
     df = get_airports()
-    print(len(get_airports()))
-    print(df[df['iata_code'] != 0])
-    print(df['type'].value_counts())
+    print(df)
 
 if __name__ == "__main__":
     main()

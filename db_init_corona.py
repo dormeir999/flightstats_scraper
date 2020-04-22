@@ -98,7 +98,7 @@ def create_tables_covid19():
                 , confirmed INTEGER
                 , dead INTEGER
                 , recovered INTEGER
-                , updated TIMESTAMP
+                , updated INTEGER
                 , longitude FLOAT
                 , latitude FLOAT)""")
 
@@ -114,7 +114,7 @@ def create_tables_covid19():
                 , confirmed INTEGER
                 , dead INTEGER
                 , recovered INTEGER
-                , updated TIMESTAMP
+                , updated INTEGER
                 , longitude FLOAT
                 , latitude FLOAT)""")
 
@@ -122,7 +122,6 @@ def create_tables_covid19():
         cur.execute("CREATE INDEX idx_location_ ON covid19_city(location)")
     except mysql.connector.errors.ProgrammingError as err:
         print(err)
-
 
     db.commit()
 
@@ -132,7 +131,6 @@ def main():
     create_conversion_tables()
     # create_conversion_tables()
     create_tables_covid19()
-
 
 
 if __name__ == '__main__':

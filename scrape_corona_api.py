@@ -21,18 +21,6 @@ import sys
 import config_scraper as CFG
 from list_airport_codes import get_airports
 
-#
-# AIRPORTS_FILE_NAME = "airport-codes.csv"
-# FIRST_ITEM = 0
-#
-# # constants for scraping
-# CITIES_URL = "https://www.trackcorona.live/api/cities"
-# TRAVEL_URL = "https://www.trackcorona.live/api/travel"
-# PROVINCE_URL = "https://www.trackcorona.live/api/provinces"
-# COUNTRIES_URL = "https://www.trackcorona.live/api/countries"
-# COUNTRIES_NO_AIRPORTS = ['VA', 'SM', 'AX', 'NA', 'LI']
-# DATA_COLUMN_NAME = 'data'
-
 
 def get_covid_data_countries(airports):
     """
