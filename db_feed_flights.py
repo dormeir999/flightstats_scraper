@@ -24,7 +24,7 @@ def db_insert_airports():
 
     query = """INSERT INTO airports (type, name, elevation_ft, continent, iso_country, iso_region, 
             municipality, gps_code, iata_code, local_code, longitude, latitude)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
     for index, airport in airports.iterrows():
 
