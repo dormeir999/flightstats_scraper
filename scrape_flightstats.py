@@ -52,6 +52,7 @@ FIRST_ITEM = 0
 SECOND_ITEM = 1
 THIRD_ITEM = 2
 FOURTH_ITEM = 3
+FLIGHT_NOT_IN_SYSTEM_STR = "h6"
 
 
 # constants used for filtering iata codes
@@ -294,7 +295,8 @@ def get_flights_data(flight_links):
     for flight_link in flight_links[FIRST_ITEM]:
         page = requests.get(flight_link)  # HTML request
         soup = BeautifulSoup(page.content, HTML_PARSER_STR)
-
+        if soup.find(FLIGHT_NOT_IN_SYSTEM_STR):  # 'THIS FLIGHT COULD NOT BE LOCATED IN OUR SYSTEM'
+            continue
         flight_detail_temp = get_flight_details(soup)
         flight_details.append(flight_detail_temp)  # Scrape for regular flight's details (name, destination, gate)
 
