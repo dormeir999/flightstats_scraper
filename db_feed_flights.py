@@ -20,11 +20,11 @@ def db_insert_airports():
 
     airports = get_airports()
     db, cur = db_create_cursor()
+    airports.drop(columns=['name'], inplace=True)
 
-    query = """INSERT INTO airports (type, name, elevation_ft, continent, iso_country, iso_region, 
+    query = """INSERT INTO airports (type, elevation_ft, continent, iso_country, iso_region, 
             municipality, gps_code, iata_code, local_code, longitude, latitude)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
     for index, airport in airports.iterrows():
 
