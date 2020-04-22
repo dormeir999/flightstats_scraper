@@ -38,7 +38,7 @@ def collect_flight_links(url):
         driver = webdriver.Chrome('/usr/bin/chromedriver', chrome_options=chrome_options)
     else:
         driver = webdriver.Chrome()
-        
+
     driver.get(url)
     if num_pages == 0:
         return html_list, num_pages
