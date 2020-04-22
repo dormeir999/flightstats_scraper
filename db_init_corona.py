@@ -17,30 +17,51 @@ def create_conversion_tables():
 
     db, cur = db_create_cursor()
 
+    # add iata code to the table and drop iso_region in the airports table?
+    # iata_code
+    # VARCHAR(10), FOREIGN
+    # KEY(iata_code)
+    # REFERENCES
+    # airports(iata_code),
+
     #  country - airports conversion table:
     cur.execute("""CREATE TABLE IF NOT EXISTS country_airport(
-                    iata_code VARCHAR(10), FOREIGN KEY (iata_code) REFERENCES airports(iata_code)
-                    , iso_country VARCHAR(255) PRIMARY KEY
+
+                    iso_country VARCHAR(255) PRIMARY KEY
                     )""")
     try:
         cur.execute("CREATE INDEX idx_country ON country_airport(iso_country)")
     except mysql.connector.errors.ProgrammingError as err:
         print(err)
 
+
+    # add iata code to the table and drop iso_region in the airports table?
+    # iata_code
+    # VARCHAR(10), FOREIGN
+    # KEY(iata_code)
+    # REFERENCES
+    # airports(iata_code),
+
     # region - airports conversion table:
     cur.execute("""CREATE TABLE IF NOT EXISTS region_airport(
-                    iata_code VARCHAR(10), FOREIGN KEY (iata_code) REFERENCES airports(iata_code)
-                    , iso_region VARCHAR(255) PRIMARY KEY
+                    iso_region VARCHAR(255) PRIMARY KEY
                     )""")
     try:
         cur.execute("CREATE INDEX idx_region ON region_airport(iso_region)")
     except mysql.connector.errors.ProgrammingError as err:
         print(err)
 
+
+    # add iata code to the table and drop municipality in the airports table?
+    # iata_code
+    # VARCHAR(10), FOREIGN
+    # KEY(iata_code)
+    # REFERENCES
+    # airports(iata_code)
+
     # city - airports conversion table:
     cur.execute("""CREATE TABLE IF NOT EXISTS city_airport(
-                    iata_code VARCHAR(10), FOREIGN KEY (iata_code) REFERENCES airports(iata_code)
-                    , municipality VARCHAR(255) PRIMARY KEY
+                    municipality VARCHAR(255) PRIMARY KEY
                     )""")
     try:
         cur.execute("CREATE INDEX idx_municipality ON city_airport(municipality)")

@@ -37,7 +37,6 @@ def create_tables_flights():
     cur.execute("""CREATE TABLE IF NOT EXISTS departures(
                 flight_id VARCHAR(255) PRIMARY KEY
                 , departure_airport VARCHAR(10), FOREIGN KEY (departure_airport) REFERENCES airports(iata_code)
-                , airline VARCHAR(50)
                 , flight_number INTEGER
                 , flight_status VARCHAR(255)
                 , arrival_airport VARCHAR(10)

@@ -305,8 +305,8 @@ def get_flights_data(flight_links):
     print(flights_data)
 
     # FEED to DATABASE
-    #db_feed_flights_data(flights_data)
-    #print("data added to database")
+    db_feed_flights_data(flights_data)
+    print("data added to database")
 
     return flights_data
 
@@ -352,6 +352,7 @@ def main():
     #test_get_flights_links()
 
     # scrape_flights('airport-codes.csv', ['large_airport'], 1000, 0, ['IL'], CONTINENTS_2DIGITS)
+
 
     # arguments parsing
     parser = argparse.ArgumentParser(description=PARSER_DESCRIB)
