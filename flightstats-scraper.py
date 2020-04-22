@@ -83,10 +83,6 @@ ISO_COUNTRIES_CODES = ['US', 'PR', 'MH', 'MP', 'GU', 'SO', 'AQ', 'GB', 'PG', 'AD
        'PY', 'TW', 'SG', 'VI', 'SM', 'UY', 'VE', 'AG', 'BB', 'DM', 'GP',
        'MQ', 'BL', 'TJ', 'KN', 'LC', 'TM', 'AW', 'BQ', 'CW', 'SX', 'AI',
        'MS', 'TT', 'VG', 'VC', 'UZ', 'VA', 'MO', 'BT', 'BN', 'CC', 'CX']
-PARSER_DESCRIB = """Insert the filename of airport details.
-                    and other optional filters. If you want to add filters, add the
-                    filter flag and than each parameter with space:
-                    flightstats-scraper.py airport-codes.csv {-type TYPE -country COUNTRY1 COUNTRY2 "-max-feet NUM -min-feet NUM}"""
 
 # constants for DB:
 host="localhost"
@@ -311,8 +307,8 @@ def get_flights_data(flight_links):
     print(flights_data)
 
     # FEED to DATABASE
-    #db_feed_flights_data(flights_data)
-    #print("data added to database")
+    db_feed_flights_data(flights_data)
+    print("data added to database")
 
     return flights_data
 
@@ -355,25 +351,29 @@ def main():
     :return:
     """
     # test scraper
-    #test_get_flights_links()
+    # test_get_flights_links()
+    scrape_flights('airport-codes.csv', ['large_airport'], 1000, 0, ['IL'], CONTINENTS_2DIGITS)
 
-    #scrape_flights('airport-codes.csv', ['large_airport'], 1000, 0, ['IL'], CONTINENTS_2DIGITS)
-
-    # arguments parsing
-    parser = argparse.ArgumentParser(description=PARSER_DESCRIB)
-    parser.add_argument("filename", type=str)
-    parser.add_argument("-type", type=str,  nargs='+', choices=['heliport', 'small_airport', 'closed', 'seaplane_base',
-                                                      'balloonport', 'medium_airport', 'large_airport'])
-    parser.add_argument("-country", type=str, nargs='+', choices=ISO_COUNTRIES_CODES)
-    parser.add_argument("-continent", type=str, nargs='+', choices=CONTINENTS_2DIGITS)
-    parser.add_argument("-maxfeet", type=int)
-    parser.add_argument("-minfeet", type=int)
-    args = parser.parse_args()
-
-    # running the scraper
-    flights_data = scrape_flights(args.filename, args.type, args.maxfeet, args.minfeet, args.country, args.continent)
-
-    return flights_data
+    # # arguments parsing
+    # parser = argparse.ArgumentParser(description="Insert the filename of airport details."
+    #                                              "and other optional filters. If you want to add filters, add the"
+    #                                              " filter flag and than each parameter with space:"
+    #                                              "flightstats-scraper.py airport-codes.csv "
+    #                                              "{-type TYPE -country COUNTRY1 COUNTRY2"
+    #                                              "-max-feet NUM -min-feet NUM}")
+    # parser.add_argument("filename", type=str)
+    # parser.add_argument("-type", type=str,  nargs='+', choices=['heliport', 'small_airport', 'closed', 'seaplane_base',
+    #                                                  'balloonport', 'medium_airport', 'large_airport'])
+    # parser.add_argument("-country", type=str, nargs='+', choices=ISO_COUNTRIES_CODES)
+    # parser.add_argument("-continent", type=str, nargs='+', choices=CONTINENTS_2DIGITS)
+    # parser.add_argument("-maxfeet", type=int)
+    # parser.add_argument("-minfeet", type=int)
+    # args = parser.parse_args()
+    #
+    # # running the scraper
+    # flights_data = scrape_flights(args.filename, args.type, args.maxfeet, args.minfeet, args.country, args.continent)
+    #
+    # return flights_data
 
 
 if __name__ == '__main__':
