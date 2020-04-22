@@ -11,6 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, WebDriverException
+import platform
 import requests
 from bs4 import BeautifulSoup
 
@@ -28,6 +29,12 @@ def collect_flight_links(url):
     num_pages = get_number_of_pages(url)
     html_list = []
     driver = webdriver.Chrome()
+    if platform.system() == 'Linux':  # Linux system must specifically specify the path to chromedriver
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        driver = webdriver.Chrome('/usr/bin/chromedriver', chrome_options=chrome_options)
     driver.get(url)
     if num_pages == 0:
         return html_list, num_pages
