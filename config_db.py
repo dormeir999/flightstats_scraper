@@ -11,7 +11,7 @@ Last Updated: 19.04.2020
 # DB specifics:
 host = "localhost"
 user = "root"
-pwd = 'Flightscraper999#'
+pwd = 'flightscraper'
 database = 'flight_data'
 logfile = 'fs_log.log'
 

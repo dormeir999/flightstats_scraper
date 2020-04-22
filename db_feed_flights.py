@@ -39,6 +39,10 @@ def db_insert_airports():
             cur.execute(query, data)
         except mysql.connector.errors.IntegrityError as err:
             print("Error caught while updating airport table: {}".format(err))
+        except mysql.connector.errors.DatabaseError as err:
+            print("Error caught while updating airport table: {}".format(err))
+
+
     db.commit()
 
 
@@ -48,16 +52,16 @@ def db_insert_conversion_tables():
     airports = get_airports()
     db, cur = db_create_cursor()
 
-    # city
-    cities = airports['municipality'].dropna().unique()
-    query = """INSERT INTO city_airports (municipality) VALUES (%s);"""
-
-    for city in cities:
-        # catch error if there are duplicates in the data set
-        try:
-            cur.execute(query, [city])
-        except mysql.connector.errors.IntegrityError as err:
-            print("Error caught while updating country_airports table: {}".format(err))
+    # # city
+    # cities = airports['municipality'].dropna().unique()
+    # query = """INSERT INTO city_airports (municipality) VALUES (%s);"""
+    #
+    # for city in cities:
+    #     # catch error if there are duplicates in the data set
+    #     try:
+    #         cur.execute(query, [city])
+    #     except mysql.connector.errors.IntegrityError as err:
+    #         print("Error caught while updating country_airports table: {}".format(err))
 
 
     # region
