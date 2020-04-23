@@ -307,7 +307,7 @@ def get_flights_data(flight_links):
 
     # FEED to DATABASE
     db_feed_flights_data(flights_data)
-    print("data added to database")
+    print(f"{len(flight_links[FIRST_ITEM])} flights added to database")
 
     return flights_data
 
