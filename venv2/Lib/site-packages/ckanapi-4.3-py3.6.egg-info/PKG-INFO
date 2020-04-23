@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: ckanapi
+Version: 4.3
+Summary: A command line interface and Python module for accessing the CKAN Action API
+Home-page: https://github.com/ckan/ckanapi
+Author: Ian Ward
+Author-email: ian@excess.org
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN

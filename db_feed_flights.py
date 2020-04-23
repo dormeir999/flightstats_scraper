@@ -22,7 +22,7 @@ def db_insert_airports():
     db, cur = db_create_cursor()
     # airports.drop(columns=['name'], inplace=True)
 
-    query = """INSERT INTO airports (type, name, elevation_ft, continent, iso_country, iso_region, 
+    query = """INSERT INTO airports (airport_type, name, elevation_ft, continent, iso_country, iso_region, 
             municipality, gps_code, iata_code, local_code, longitude, latitude)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
@@ -114,7 +114,7 @@ def db_insert_flights(flight_data):
 
     db, cur = db_create_cursor()
 
-    # change type of data from bs4.element.NavigableString to string
+    # change airport_type of data from bs4.element.NavigableString to string
     for e in flight_data.keys():
         flight_data[e] = str(flight_data[e])
 
@@ -150,7 +150,7 @@ def db_insert_events(events_data):
     """This function takes the a event data dictionary as an input and feeds it into the database table events.
     :param events_data: (flight_id, event_date, event_time, event_type)"""
 
-    # change type of data from bs4.elemnt.NavigableString to string
+    # change airport_type of data from bs4.elemnt.NavigableString to string
     events_data = tuple([str(e) for e in events_data])
 
     length = len(events_data)

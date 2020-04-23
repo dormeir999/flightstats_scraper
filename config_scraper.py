@@ -13,17 +13,9 @@ Last Updated: 19.04.2020
 # constant for testing
 TESTING_AIRPORT = 'ATL'
 
-# constants for flights web urls
-SPECIFIC_FLIGHT_IDENTIFIER = "flightId"
-FLIGHT_INFO_TAG = "flight-details"
-FLIGHT_TRACK_TAG = "flight-tracker"
-URL_SPLIT_STR = "/v2"
-URL_FLIGHT_DEPT = 'https://www.flightstats.com/v2/flight-tracker/departures/'
-
-
 # constants used for filtering iata codes
 IATA_STR = 'iata_code'
-TYPE_STR = 'type'
+TYPE_STR = 'airport_type'
 FEET_STR = 'elevation_ft'
 COUNTR_STR = 'iso_country'
 CONTIN_STR = 'continent'
@@ -57,11 +49,9 @@ ISO_COUNTRIES_CODES = ['US', 'PR', 'MH', 'MP', 'GU', 'SO', 'AQ', 'GB', 'PG', 'AD
 PARSER_DESCRIB = """Insert the filename of airport details.
                     and other optional filters. If you want to add filters, add the
                     filter flag and than each parameter with space:
-                    scrape_flightstats.py airport-codes.csv {-type TYPE -country COUNTRY1 COUNTRY2 "-max-feet NUM -min-feet NUM}"""
-
+                    scrape_flightstats.py airport-codes.csv {-airport_type TYPE -country COUNTRY1 COUNTRY2 "-max-feet NUM -min-feet NUM}"""
+AIRPORTS_TYPES = 'heliport', 'small_airport', 'closed', 'seaplane_base','balloonport', 'medium_airport', 'large_airport'
 AIRPORTS_FILE_NAME = "airport-codes.csv"
-FIRST_ITEM = 0
-SECOND_ITEM = 1
 
 # constants for scraping corona
 CITIES_URL = "https://www.trackcorona.live/api/cities"
@@ -77,3 +67,35 @@ KEY_iata_code = 'iata_code'
 KEY_COORD = 'coordinates'
 KEY_longitude = 'longitude'
 KEY_latitude = 'latitude'
+
+
+# constants used for html parsing
+HTML_PARSER_STR = 'html.parser'
+FLIGHT_TRACKER_STR = 'h2'
+FLIGHT_NUMBER_STR = "h1"
+FLIGHT_STAT_STR = "p"
+AIRPORT_DEPT_STR = "h2"  # In a different context, it's also the flight tracker string (see above)
+FLIGHTS_EVENTS_STR = 'rowData'
+HTML_LINKS_STR1 = 'a'
+HTML_LINKS_STR2 = 'href'
+NO_FLIGHTS_MSG = 'No recent flights!'
+AIRPORT_CODE_CLASS = "airportCodeTitle"
+DATE_CLASS = "date"
+FLIGHT_CARRIER_STRING = "h1"
+FLIGHT_CARRIER_CLASS = "carrier-text-style"
+FLIGHT_CARRIER_SPACE_STR = " "
+FIRST_ITEM = 0
+SECOND_ITEM = 1
+THIRD_ITEM = 2
+FOURTH_ITEM = 3
+FLIGHT_NOT_IN_SYSTEM_STR = "h6"
+
+# constants for flights web urls
+SPECIFIC_FLIGHT_IDENTIFIER = "flightId"
+FLIGHT_INFO_TAG = "flight-details"
+FLIGHT_TRACK_TAG = "flight-tracker"
+URL_SPLIT_STR = "/v2"
+URL_FLIGHT_DEPT = 'https://www.flightstats.com/v2/flight-tracker/departures/'
+DIVISOR_UTC = 3
+MONTH_STRING_LENGTH = 3
+
