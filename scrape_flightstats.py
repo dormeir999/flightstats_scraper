@@ -304,7 +304,7 @@ def get_flights_data(flight_links):
         flight_events.append(flight_event_temp)  # Scrape for before and during the flight
 
     flights_data = list(zip(flight_details, flight_events))  # zip the two data lists together
-    print(flights_data)
+    # print(flights_data)
 
     # FEED to DATABASE
     db_feed_flights_data(flights_data)
@@ -352,79 +352,23 @@ def main():
     """
     # test scraper
     #test_get_flights_links()
-    flight_links = ['https://www.flightstats.com/v2/flight-details/AC/9160?year=2020&month=4&date=23&flightId=1036465081',
-     'https://www.flightstats.com/v2/flight-details/LH/8?year=2020&month=4&date=23&flightId=1036465081',
-     'https://www.flightstats.com/v2/flight-details/NH/6071?year=2020&month=4&date=23&flightId=1036465081',
-     'https://www.flightstats.com/v2/flight-details/LH/1212?year=2020&month=4&date=23&flightId=1036465104',
-     'https://www.flightstats.com/v2/flight-details/AC/9279?year=2020&month=4&date=23&flightId=1036465104',
-     'https://www.flightstats.com/v2/flight-details/LX/3661?year=2020&month=4&date=23&flightId=1036465104',
-     'https://www.flightstats.com/v2/flight-details/NH/6179?year=2020&month=4&date=23&flightId=1036465104',
-     'https://www.flightstats.com/v2/flight-details/LH/1008?year=2020&month=4&date=23&flightId=1036465087',
-     'https://www.flightstats.com/v2/flight-details/AC/9318?year=2020&month=4&date=23&flightId=1036465087',
-     'https://www.flightstats.com/v2/flight-details/NH/6169?year=2020&month=4&date=23&flightId=1036465087',
-     'https://www.flightstats.com/v2/flight-details/SN/7002?year=2020&month=4&date=23&flightId=1036465087',
-     'https://www.flightstats.com/v2/flight-details/LH/8402?year=2020&month=4&date=23&flightId=1036465216',
-     'https://www.flightstats.com/v2/flight-details/LH/98?year=2020&month=4&date=23&flightId=1036465193',
-     'https://www.flightstats.com/v2/flight-details/NH/6215?year=2020&month=4&date=23&flightId=1036465193',
-     'https://www.flightstats.com/v2/flight-details/AC/9006?year=2020&month=4&date=23&flightId=1036465193',
-     'https://www.flightstats.com/v2/flight-details/AC/9024?year=2020&month=4&date=23&flightId=1036465173',
-     'https://www.flightstats.com/v2/flight-details/NH/6249?year=2020&month=4&date=23&flightId=1036465173',
-     'https://www.flightstats.com/v2/flight-details/LH/1186?year=2020&month=4&date=23&flightId=1036465173',
-     'https://www.flightstats.com/v2/flight-details/LX/3603?year=2020&month=4&date=23&flightId=1036465173',
-     'https://www.flightstats.com/v2/flight-details/AA/9426?year=2020&month=4&date=23&flightId=1036522551',
-     'https://www.flightstats.com/v2/flight-details/WY/116?year=2020&month=4&date=23&flightId=1036478907',
-     'https://www.flightstats.com/v2/flight-details/LH/9596?year=2020&month=4&date=23&flightId=1036478907',
-     'https://www.flightstats.com/v2/flight-details/LH/1506?year=2020&month=4&date=23&flightId=1036465170',
-     'https://www.flightstats.com/v2/flight-details/DL/3341?year=2020&month=4&date=23&flightId=1036485495',
-     'https://www.flightstats.com/v2/flight-details/DE/1502?year=2020&month=4&date=23&flightId=1036456323',
-     'https://www.flightstats.com/v2/flight-details/UA/2789?year=2020&month=4&date=23&flightId=1036473863',
-     'https://www.flightstats.com/v2/flight-details/UA/961?year=2020&month=4&date=23&flightId=1036474896',
-     'https://www.flightstats.com/v2/flight-details/AC/5685?year=2020&month=4&date=23&flightId=1036474896',
-     'https://www.flightstats.com/v2/flight-details/LH/7603?year=2020&month=4&date=23&flightId=1036474896',
-     'https://www.flightstats.com/v2/flight-details/CI/62?year=2020&month=4&date=23&flightId=1036454869',
-     'https://www.flightstats.com/v2/flight-details/GF/16?year=2020&month=4&date=23&flightId=1036460115',
-     'https://www.flightstats.com/v2/flight-details/DL/3343?year=2020&month=4&date=23&flightId=1036523660',
-     'https://www.flightstats.com/v2/flight-details/CX/14?year=2020&month=4&date=23&flightId=1036455053',
-     'https://www.flightstats.com/v2/flight-details/KL/1766?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/AM/6218?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/CZ/7776?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/DL/9537?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/GA/9233?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/MF/9368?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/RU/418?year=2020&month=4&date=23&flightId=1036470781',
-     'https://www.flightstats.com/v2/flight-details/UA/2777?year=2020&month=4&date=23&flightId=1036473790',
-     'https://www.flightstats.com/v2/flight-details/UA/2789?year=2020&month=4&date=23&flightId=1036473863',
-     'https://www.flightstats.com/v2/flight-details/UA/961?year=2020&month=4&date=23&flightId=1036474896',
-     'https://www.flightstats.com/v2/flight-details/AC/5685?year=2020&month=4&date=23&flightId=1036474896',
-     'https://www.flightstats.com/v2/flight-details/LH/7603?year=2020&month=4&date=23&flightId=1036474896',
-     'https://www.flightstats.com/v2/flight-details/CI/62?year=2020&month=4&date=23&flightId=1036454869',
-     'https://www.flightstats.com/v2/flight-details/GF/16?year=2020&month=4&date=23&flightId=1036460115',
-     'https://www.flightstats.com/v2/flight-details/DL/3343?year=2020&month=4&date=23&flightId=1036523660',
-     'https://www.flightstats.com/v2/flight-details/CX/14?year=2020&month=4&date=23&flightId=1036455053',
-     'https://www.flightstats.com/v2/flight-details/KL/1766?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/AM/6218?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/CZ/7776?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/DL/9537?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/GA/9233?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/MF/9368?year=2020&month=4&date=23&flightId=1036464676',
-     'https://www.flightstats.com/v2/flight-details/RU/418?year=2020&month=4&date=23&flightId=1036470781',
-     'https://www.flightstats.com/v2/flight-details/UA/2777?year=2020&month=4&date=23&flightId=1036473790']
-    scrape_flights('airport-codes.csv', ['large_airport'], 1000, 0, ['DE'], CONTINENTS_2DIGITS)
+
+    # scrape_flights('airport-codes.csv', ['large_airport'], 1000, 0, ['DE'], CONTINENTS_2DIGITS)
     # get_flights_data(flight_links)
     #
-    # # arguments parsing
-    # parser = argparse.ArgumentParser(description=PARSER_DESCRIB)
-    # parser.add_argument("filename", type=str)
-    # parser.add_argument("-type", type=str,  nargs='+', choices=['heliport', 'small_airport', 'closed', 'seaplane_base',
-    #                                                   'balloonport', 'medium_airport', 'large_airport'])
-    # parser.add_argument("-country", type=str, nargs='+', choices=ISO_COUNTRIES_CODES)
-    # parser.add_argument("-continent", type=str, nargs='+', choices=CONTINENTS_2DIGITS)
-    # parser.add_argument("-maxfeet", type=int)
-    # parser.add_argument("-minfeet", type=int)
-    # args = parser.parse_args()
-    #
-    # # running the scraper
-    # flights_data = scrape_flights(args.filename, args.type, args.maxfeet, args.minfeet, args.country, args.continent)
+    # arguments parsing
+    parser = argparse.ArgumentParser(description=PARSER_DESCRIB)
+    parser.add_argument("filename", type=str)
+    parser.add_argument("-type", type=str,  nargs='+', choices=['heliport', 'small_airport', 'closed', 'seaplane_base',
+                                                      'balloonport', 'medium_airport', 'large_airport'])
+    parser.add_argument("-country", type=str, nargs='+', choices=ISO_COUNTRIES_CODES)
+    parser.add_argument("-continent", type=str, nargs='+', choices=CONTINENTS_2DIGITS)
+    parser.add_argument("-maxfeet", type=int)
+    parser.add_argument("-minfeet", type=int)
+    args = parser.parse_args()
+
+    # running the scraper
+    flights_data = scrape_flights(args.filename, args.type, args.maxfeet, args.minfeet, args.country, args.continent)
     #
     # return flights_data
 
