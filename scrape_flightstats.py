@@ -202,7 +202,6 @@ def get_flights_links(airport):
 
     # filter links for only the details about the flights links:
     flight_links = filter_flights_links(flat_links, site_basic_path)
-    print(flight_links)
 
     return flight_links, only_one_page
 
