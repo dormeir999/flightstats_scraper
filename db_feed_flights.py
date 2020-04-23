@@ -32,8 +32,17 @@ def db_insert_airports():
         if airport[CFG.elevation] == '':
             airport[CFG.elevation] = None
         airport.fillna(0, inplace=True)
-        data = tuple(airport)[CFG.second_elem:]
+        data = list(airport)[CFG.second_elem:]
+
         print(data)
+        print(type(data))
+        data[2] = int(data[2])
+
+        data[-2] = float(data[-2])
+        data[-1] = float(data[-1])
+        print(type(data))
+        for d in data:
+            print(type(d), d)
         # catch error if there are duplicates in the data set
         try:
             cur.execute(query, data)
