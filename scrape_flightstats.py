@@ -65,7 +65,7 @@ EMPTY_AIRPORTS_INT = 0
 NO_AIRPORTS_MSG = "No airports were found..."
 
 # constants used for main()
-CONTINENTS_2DIGITS = ['OC', 'AF', 'EU', 'AS', 'SA', 'AN']
+CONTINENTS_2DIGITS = ['OC', 'AF', 'EU', 'AS', 'SA', 'AN', 'NA']
 ISO_COUNTRIES_CODES = ['US', 'PR', 'MH', 'MP', 'GU', 'SO', 'AQ', 'GB', 'PG', 'AD', 'SD',
        'SA', 'AE', 'SS', 'ES', 'CN', 'AF', 'LK', 'SB', 'CO', 'AU', 'MG',
        'TD', 'AL', 'AM', 'MX', 'MZ', 'PW', 'NR', 'AO', 'AR', 'AS', 'AT',
