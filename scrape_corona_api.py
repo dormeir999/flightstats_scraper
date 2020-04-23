@@ -25,7 +25,7 @@ from list_airport_codes import get_airports
 def get_covid_data_countries(airports):
     """
     Scrapes trackcorona.live/api for covid-19 data on countries, and pre-process it to match the iso codes in airports
-    :param airports: a pandas DataFrame of airports data (ident, airport_type, name, elevation, continent, iso country...)
+    :param airports: a pandas DataFrame of airports data (ident, type, name, elevation, continent, iso country...)
     :return: a pandas DataFrame of countries Covid-19 data (latitude, longitude, confirmed cases, dead, recovered)
     """
     try:
@@ -50,7 +50,7 @@ def get_covid_data_countries(airports):
 def get_covid_data_regions(airports):
     """
     Scrapes trackcorona.live/api for covid-19 data on provinces, and pre-process it to match the iso_regions in airports
-    :param airports: a pandas DataFrame of airports data (ident, airport_type, name, elevation, continent, iso country...)
+    :param airports: a pandas DataFrame of airports data (ident, type, name, elevation, continent, iso country...)
     :return: a pandas DataFrame of iso_regions Covid-19 data (latitude, longitude, confirmed cases, dead, recovered)
     """
     try:
@@ -98,7 +98,7 @@ def get_covid_data_regions(airports):
 def get_covid_data_cities(airports):
     """
     Scrapes trackcorona.live/api for covid-19 data on cities
-    :param airports: a pandas DataFrame of airports data (ident, airport_type, name, elevation, continent, iso country...)
+    :param airports: a pandas DataFrame of airports data (ident, type, name, elevation, continent, iso country...)
     :return: a pandas DataFrame of iso_regions Covid-19 data (latitude, longitude, confirmed cases, dead, recovered)
     """
 
@@ -114,7 +114,7 @@ def get_covid_data_cities(airports):
 def get_travel_restrictions(airports):
     """
     Scrapes trackcorona.live/api for covid-19 data on cities
-    :param airports: a pandas DataFrame of airports data (ident, airport_type, name, elevation, continent, iso country...)
+    :param airports: a pandas DataFrame of airports data (ident, type, name, elevation, continent, iso country...)
     :return: a pandas DataFrame of iso_regions Covid-19 data (latitude, longitude, confirmed cases, dead, recovered)
     """
     travel = pd.DataFrame(requests.get(CFG.TRAVEL_URL).json()[CFG.DATA_COLUMN_NAME])

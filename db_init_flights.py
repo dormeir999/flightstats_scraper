@@ -19,7 +19,7 @@ def create_tables_flights():
 
     # airports table
     cur.execute("""CREATE TABLE IF NOT EXISTS airports(
-                airport_type VARCHAR(255)
+                type VARCHAR(255)
                 ,  name VARCHAR(255)
                 , elevation_ft INTEGER
                 , continent VARCHAR(255)

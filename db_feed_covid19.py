@@ -109,7 +109,7 @@ def db_feed_covid19_travel_restrictions(df):
         # check for last entry in covid19_country table:
         is_observation = db_select_country_data(country[CFG.KEY_country])
         data = (country['data'].replace("\'", ''))
-        # print(airport_type(is_observation[CFG.first_elem][CFG.updated]))
+        # print(type(is_observation[CFG.first_elem][CFG.updated]))
         if is_observation:
             stmt = f"""UPDATE {table} SET
                    travel_restrictions='{data}'

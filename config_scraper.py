@@ -15,7 +15,7 @@ TESTING_AIRPORT = 'ATL'
 
 # constants used for filtering iata codes
 IATA_STR = 'iata_code'
-TYPE_STR = 'airport_type'
+TYPE_STR = 'type'
 FEET_STR = 'elevation_ft'
 COUNTR_STR = 'iso_country'
 CONTIN_STR = 'continent'
@@ -49,7 +49,7 @@ ISO_COUNTRIES_CODES = ['US', 'PR', 'MH', 'MP', 'GU', 'SO', 'AQ', 'GB', 'PG', 'AD
 PARSER_DESCRIB = """Insert the filename of airport details.
                     and other optional filters. If you want to add filters, add the
                     filter flag and than each parameter with space:
-                    scrape_flightstats.py airport-codes.csv {-airport_type TYPE -country COUNTRY1 COUNTRY2 "-max-feet NUM -min-feet NUM}"""
+                    scrape_flightstats.py airport-codes.csv {-type TYPE -country COUNTRY1 COUNTRY2 "-max-feet NUM -min-feet NUM}"""
 AIRPORTS_TYPES = 'heliport', 'small_airport', 'closed', 'seaplane_base','balloonport', 'medium_airport', 'large_airport'
 AIRPORTS_FILE_NAME = "airport-codes.csv"
 

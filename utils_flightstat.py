@@ -18,11 +18,11 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def create_list_of_airports(filename, airport_type, max_feet, min_feet, country, continent):
+def create_list_of_airports(filename, type, max_feet, min_feet, country, continent):
     """
     Creates a list of airports from airports file and filters
     :param filename: airports.csv file of airports and their infos
-    :param airport_type: filter airport_type (small, helicopter, etc...)
+    :param type: filter airport type (small, helicopter, etc...)
     :param max_feet: The highest elevation level of the airports, in feet
     :param min_feet: The lowest elevation level of the airports, in feet
     :param country: countries to filter
@@ -33,7 +33,7 @@ def create_list_of_airports(filename, airport_type, max_feet, min_feet, country,
         airports = drop_nan_rows(pd.read_csv(filename), CFG.IATA_STR)  # Read airports file, drop airports without  \
         # iata code (since we can't scrape them from flightstats)
         try:
-            airports_iata = filter_airports_iata(airports, airport_type, max_feet, min_feet, country, continent)
+            airports_iata = filter_airports_iata(airports, type, max_feet, min_feet, country, continent)
             return airports_iata.values  # Return a list of filtered airports
         except UnicodeError:
             print("The list of airports file " + str(filename) + " is not in the write csv form - exiting the program")
@@ -43,11 +43,11 @@ def create_list_of_airports(filename, airport_type, max_feet, min_feet, country,
         sys.exit()
 
 
-def filter_airports_iata(airports, airport_type, max_feet, min_feet, country, continent):
+def filter_airports_iata(airports, type, max_feet, min_feet, country, continent):
     """
     filter the list of all airports using airports data, and the filters below :
     :param airports: df of all airports details
-    :param airport_type: airport_type of airport (small, helicopter, etc...)
+    :param type: type of airport (small, helicopter, etc...)
     :param max_feet: The highest elevation level of the airports, in feet
     :param min_feet: The lowest elevation level of the airports, in feet
     :param country: countries to filter
@@ -55,11 +55,11 @@ def filter_airports_iata(airports, airport_type, max_feet, min_feet, country, co
     :return: a list of airports iata codes, filtered, and the filtered airports df
     """
     print("You are filtering airports with those parameters:")
-    print("airport_type: {}, maxfeet: {}, minfeet: {}, country: {}".format(airport_type, max_feet, min_feet, country))
+    print("type: {}, maxfeet: {}, minfeet: {}, country: {}".format(type, max_feet, min_feet, country))
     airports_iata = airports[CFG.IATA_STR]  # get all codes
     # For each argument, if it has value - filter according to the value (drop the nans before the filter)
-    if airport_type:
-        airports_iata = drop_nan_rows(airports, CFG.TYPE_STR)[CFG.IATA_STR][airports[CFG.TYPE_STR].isin(airport_type)]
+    if type:
+        airports_iata = drop_nan_rows(airports, CFG.TYPE_STR)[CFG.IATA_STR][airports[CFG.TYPE_STR].isin(type)]
         airports = airports[airports[CFG.IATA_STR].isin(airports_iata)]
     if max_feet:
         airports_iata = drop_nan_rows(airports, CFG.FEET_STR)[CFG.IATA_STR][airports[CFG.FEET_STR] <= max_feet]

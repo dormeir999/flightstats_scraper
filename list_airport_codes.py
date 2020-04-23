@@ -36,7 +36,7 @@ def get_airports():
 
 def get_iata_code():
     """
-    Converts the airports data (ident, airport_type, name, elevation, continent, iso country and region...) to csv,
+    Converts the airports data (ident, type, name, elevation, continent, iso country and region...) to csv,
     and removes rows with null values for iata_code.
     :return: a pandas DataFrame of airports data
     """

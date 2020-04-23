@@ -136,18 +136,18 @@ def test_get_flights_links():
     print('_________________________________')
 
 
-def scrape_flights(filename, airport_type, max_feet, min_feet, country, continent):
+def scrape_flights(filename, type, max_feet, min_feet, country, continent):
     """
     Receives a csv file (list of airports), returns a list of data about departing flights from those airports.
     :param filename: airports.csv file of airports and their infos
-    :param airport_type: filter airport_type (small, helicopter, etc...)
+    :param type: filter airport type (small, helicopter, etc...)
     :param max_feet: The highest elevation level of the airports, in feet
     :param min_feet: The lowest elevation level of the airports, in feet
     :param country: countries to filter
     :param continent: continents to filter
     :return: flights_data for each airport in the list
     """
-    list_of_airports = create_list_of_airports(filename, airport_type, max_feet, min_feet, country, continent)
+    list_of_airports = create_list_of_airports(filename, type, max_feet, min_feet, country, continent)
     print("Scraping the airports in the " + str(filename) + ":")
     print(list_of_airports)
     flights_data = []
