@@ -16,7 +16,7 @@ import config_scraper as CFG
 def get_airports():
     """takes a list of all airports and filters it to get only medium and large airports with following information:
 
-    ['ident', 'airport_type', 'name', 'elevation_ft', 'continent', 'iso_country', 'iso_region', 'municipality',
+    ['ident', 'type', 'name', 'elevation_ft', 'continent', 'iso_country', 'iso_region', 'municipality',
     'gps_code', 'iata_code', 'local_code', 'coordinates']
     """
     df = pd.read_csv(CFG.AIRPORTS_FILE_NAME).dropna(axis=CFG.FIRST_ITEM, how='any', subset=[CFG.KEY_iata_code])
@@ -25,9 +25,9 @@ def get_airports():
     df[CFG.KEY_latitude] = new[CFG.SECOND_ITEM]
     df = df.drop([CFG.KEY_COORD], axis=1)
     df['iata_code'].dropna(inplace=True)
-    df = df[df['airport_type'] != 'closed']
-    df = df[df['airport_type'] != 'seaplane_base']
-    df = df[df['airport_type'] != 'heliport']
+    df = df[df['type'] != 'closed']
+    df = df[df['type'] != 'seaplane_base']
+    df = df[df['type'] != 'heliport']
 
     df = df[df['iata_code'] != '0']
 
