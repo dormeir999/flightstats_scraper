@@ -261,6 +261,43 @@ def db_select_event(flight_id, event_date):
     cur.execute(stmt)
     return cur.fetchall()
 
+def db_update_airports():
+    """This function creates a table (airports) in the database flights_departures"""
+
+    airports = get_airports()
+    db, cur = db_create_cursor()
+    # airports.drop(columns=['name'], inplace=True)
+
+
+
+    for index, airport in airports.iterrows():
+
+        # solve problem with ("), replace by (')
+        airport['name'] = airport['name'].replace('\"', '\'')
+
+        query = f"""UPDATE airports 
+                    SET 
+                        name ="{airport['name']}",
+                        elevation_ft='{int(airport['elevation_ft'])}',
+                        continent="{airport['continent']}", 
+                        iso_country='{airport['iso_country']}', 
+                        iso_region='{airport['iso_region']}', 
+                        municipality="{airport['municipality']}", 
+                        gps_code='{airport['gps_code']}', 
+                        iata_code='{airport['iata_code']}', 
+                        local_code='{airport['local_code']}', 
+                        longitude='{airport['longitude']}', 
+                        latitude='{airport['latitude']}' 
+                    WHERE 
+                        iata_code='{airport['iata_code']}';"""
+
+        # # catch error if there are duplicates in the data set
+        try:
+            cur.execute(query)
+        except mysql.connector.errors.IntegrityError as err:
+            print("Error caught while updating airport table: {}".format(err))
+    db.commit()
+
 
 def main():
     # some test data
@@ -281,8 +318,11 @@ def main():
     # # feed into airport list:
     # # feed data into
     # db_feed_flights_data(flights_data)
-    db_insert_conversion_tables()
-    db_insert_airports()
+    # db_insert_conversion_tables()
+    # db_insert_airports()
+    db_update_airports()
+
+
 
 if __name__ == '__main__':
     main()
