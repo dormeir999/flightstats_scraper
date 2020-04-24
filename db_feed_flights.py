@@ -319,7 +319,7 @@ def main():
     # # feed data into
     # db_feed_flights_data(flights_data)
     # db_insert_conversion_tables()
-    # db_insert_airports()
+    db_insert_airports()
     db_update_airports()
 
 
