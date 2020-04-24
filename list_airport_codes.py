@@ -19,7 +19,14 @@ def get_airports():
     ['ident', 'type', 'name', 'elevation_ft', 'continent', 'iso_country', 'iso_region', 'municipality',
     'gps_code', 'iata_code', 'local_code', 'coordinates']
     """
-    df = pd.read_csv(CFG.AIRPORTS_FILE_NAME).dropna(axis=CFG.FIRST_ITEM, how='any', subset=[CFG.KEY_iata_code])
+    df = pd.read_csv(AIRPORTS_FILE_NAME,
+                     na_values=['', '#N/A', '#N/A N/A', '#NA', '-1.#IND', '-1.#QNAN', '-NaN', '-nan',
+                                '1.#IND', '1.#QNAN', '<NA>', 'N/A', 'NULL', 'NaN', 'n/a', 'nan',
+                                'null'],
+                     keep_default_na=False).dropna(axis=FIRST_ITEM,
+                                                   how='any',
+                                                   subset=[KEY_iata_code])
+
     new = df[CFG.KEY_COORD].str.split(", ", n=1, expand=True)
     df[CFG.KEY_longitude] = new[CFG.FIRST_ITEM]
     df[CFG.KEY_latitude] = new[CFG.SECOND_ITEM]
