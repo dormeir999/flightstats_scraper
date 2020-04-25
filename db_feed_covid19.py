@@ -64,7 +64,6 @@ def db_feed_covid19_countries(df):
         except mysql.connector.errors.IntegrityError as err:
             print(food)
             print("Error caught while updating covid19_country table: {}".format(err))
-
     db.commit()
 
 

@@ -106,8 +106,14 @@ def create_list_of_airports(filename, type, max_feet, min_feet, country, contine
     :return: list of airports to scrape
     """
     if os.path.exists(filename):
-        airports = drop_nan_rows(pd.read_csv(filename), IATA_STR)  # Read airports file, drop airports without  \
-        # iata code (since we can't scrape them from flightstats)
+        airports = drop_nan_rows(pd.read_csv(filename,
+                     na_values=['', '#N/A', '#N/A N/A', '#NA', '-1.#IND', '-1.#QNAN', '-NaN', '-nan',
+                                '1.#IND', '1.#QNAN', '<NA>', 'N/A', 'NULL', 'NaN', 'n/a', 'nan',
+                                'null'],
+                     keep_default_na=False).dropna(axis=0,
+                                                   how='any',
+                                                   subset=['iata_code']), IATA_STR)
+
         try:
             airports_iata = filter_airports_iata(airports, type, max_feet, min_feet, country, continent)
             return airports_iata.values  # Return a list of filtered airports
@@ -130,7 +136,8 @@ def filter_airports_iata(airports, type, max_feet, min_feet, country, continent)
     :return: a list of airports iata codes, filtered, and the filtered airports df
     """
     print("You are filtering airports with those parameters:")
-    print("type: {}, maxfeet: {}, minfeet: {}, country: {}".format(type, max_feet, min_feet, country))
+    print("type: {}, maxfeet: {}, minfeet: {}, country: {}, continent: {}"
+          .format(type, max_feet, min_feet, country, continent))
     airports_iata = airports[IATA_STR]  # get all codes
     # For each argument, if it has value - filter according to the value (drop the nans before the filter)
     if type:

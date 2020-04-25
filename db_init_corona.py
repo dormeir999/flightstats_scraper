@@ -98,7 +98,7 @@ def create_tables_covid19():
                 , confirmed INTEGER
                 , dead INTEGER
                 , recovered INTEGER
-                , updated INTEGER
+                , updated TIMESTAMP
                 , longitude FLOAT
                 , latitude FLOAT)""")
 
@@ -114,7 +114,7 @@ def create_tables_covid19():
                 , confirmed INTEGER
                 , dead INTEGER
                 , recovered INTEGER
-                , updated INTEGER
+                , updated TIMESTAMP
                 , longitude FLOAT
                 , latitude FLOAT)""")
 
