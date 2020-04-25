@@ -19,7 +19,7 @@ def db_insert_airport():
         data = tuple(airport)[CFG.second_elem:]
         print(data)
         airport['name'] = airport['name'].replace('\"', '\'')
-        query = f"""INSERT INTO airport (airport_type, name, elevation_ft, continent, iso_country, iso_region, 
+        query = f"""INSERT INTO airport (type, name, elevation_ft, continent, iso_country, iso_region,
                     municipality, gps_code, iata_code, local_code, longitude, latitude)
                     VALUES ("{airport['type']}", "{airport['name']}", '{int(airport['elevation_ft'])}', 
                     "{airport['continent']}", '{airport['iso_country']}', '{airport['iso_region']}', 
