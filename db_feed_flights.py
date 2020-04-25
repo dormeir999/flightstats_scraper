@@ -22,9 +22,7 @@ def db_insert_airports():
     db, cur = db_create_cursor()
     # airports.drop(columns=['name'], inplace=True)
 
-    query = """INSERT INTO airports (type, name, elevation_ft, continent, iso_country, iso_region, 
-            municipality, gps_code, iata_code, local_code, longitude, latitude)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+
 
     for index, airport in airports.iterrows():
 
@@ -34,9 +32,17 @@ def db_insert_airports():
         airport.fillna(0, inplace=True)
         data = tuple(airport)[CFG.second_elem:]
         print(data)
+        airport['name'] = airport['name'].replace('\"', '\'')
+        query = f"""INSERT INTO airports (airport_type, name, elevation_ft, continent, iso_country, iso_region, 
+                    municipality, gps_code, iata_code, local_code, longitude, latitude)
+                    VALUES ("{airport['type']}", "{airport['name']}", '{int(airport['elevation_ft'])}', 
+                    "{airport['continent']}", '{airport['iso_country']}', '{airport['iso_region']}', 
+                    "{airport['municipality']}", '{airport['gps_code']}', '{airport['iata_code']}', 
+                    '{airport['local_code']}', '{airport['longitude']}','{airport['latitude']}');"""
+
         # catch error if there are duplicates in the data set
         try:
-            cur.execute(query, data)
+            cur.execute(query)
         except mysql.connector.errors.IntegrityError as err:
             print("Error caught while updating airport table: {}".format(err))
         # except mysql.connector.errors.DatabaseError as err:

@@ -18,7 +18,7 @@ def create_tables_flights():
     db, cur = db_create_cursor()
 
     # airports table
-    cur.execute("""CREATE TABLE IF NOT EXISTS airports(
+    cur.execute("""CREATE TABLE IF NOT EXISTS airport(
                 type VARCHAR(255)
                 ,  name VARCHAR(255)
                 , elevation_ft INTEGER
@@ -30,7 +30,12 @@ def create_tables_flights():
                 , iata_code VARCHAR(5) PRIMARY KEY
                 , local_code VARCHAR(255)
                 , longitude FLOAT
-                , latitude FLOAT)""")
+                , latitude FLOAT);""")
+
+    try:
+        cur.execute("CREATE UNIQUE INDEX idx_iata ON airports(iata_code)")
+    except mysql.connector.errors.ProgrammingError as err:
+        print(err)
 
     # departures table
     cur.execute("""CREATE TABLE IF NOT EXISTS departures(
@@ -41,7 +46,7 @@ def create_tables_flights():
                 , arrival_airport VARCHAR(10)
                 , departure_date DATE
                 , arrival_date DATE
-                , operating_airline VARCHAR(255))""")
+                , operating_airline VARCHAR(255));""")
 
     try:
         cur.execute("CREATE UNIQUE INDEX idx_flight_id ON departures(flight_id)")
@@ -54,7 +59,7 @@ def create_tables_flights():
                 , flight_id VARCHAR(255), FOREIGN KEY (flight_id) REFERENCES departures(flight_id)
                 , event_time TIME
                 , event_date DATE
-                , event_type VARCHAR(255))""")
+                , event_type VARCHAR(255));""")
 
     try:
         cur.execute("CREATE INDEX idx_flight_id_event ON events(flight_id)")
