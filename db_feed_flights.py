@@ -194,7 +194,7 @@ def create_flight_id(flight_data):
     """
 
     flight_data[CFG.KEY_flight_id] = '_'.join([flight_data[CFG.KEY_airline], flight_data[CFG.KEY_flight_number],
-                                               flight_data[CFG.KEY_dep_date]])
+                                               flight_data[CFG.KEY_dep_date], flight_data[CFG.KEY_dep_airport]])
 
     # create date from string:
     flight_data[CFG.KEY_dep_date] = datetime.strptime(flight_data[CFG.KEY_dep_date], '%d-%b-%Y')
