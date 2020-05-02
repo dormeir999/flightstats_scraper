@@ -64,32 +64,26 @@ def get_covid_data_regions(airports):
         pycountry.subdivisions.get(code=x).name if pycountry.subdivisions.get(code=x) is not None else
         '' for x in airports.iso_region]
     # Setting manually iso_regions codes that had trouble being converted to region name
-    regions_to_convert = {'DE-BR': 'Brandenburg', 'FR-E': 'Bretagne', 'FR-F': 'Centre-Val de Loire', 'CA-YT': 'Yukon',
-                          'FR-B': 'Nouvelle-Aquitaine', 'FR-D': 'Bourgogne-Franche-Comté', 'VI-U-A': 'Virgin Islands',
-                          'GU-U-A': 'Guam', 'PR-U-A': 'Puerto Rico', 'IN-MM': 'Maharashtra', 'IN-TG': 'Telengana',
-                          'FR-R': 'Pays de la Loire', 'FR-P': 'Normandie', 'IN-UL': 'Uttarakhand',
-                          'CH-GE': 'Auvergne-Rhône-Alpes', 'FR-O': 'Hauts-de-France', 'FR-J': 'Île-de-France',
-                          'IN-NL': 'Nagaland', 'FR-N': 'Occitanie', 'BR-RR': 'Roraima', 'FR-H': 'Corsica',
-                          'MP-U-A': 'Northern Mariana Islands', 'IN-TN': 'Tamil Nadu', 'IN-HR': 'Haryana',
-                          'FR-M': 'Grand Est', 'US-AK': 'Alaska', 'IN-JK': 'Jammu and Kashmir'}
-    for iso_code_region, region in regions_to_convert.items():
+    for iso_code_region, region in CFG.REGIONS_TO_CONVERT.items():
         airports.loc[airports.iso_region == iso_code_region, 'provinces'] = region
-    # Drop duplicate location with typo(?), it also has no covid-19 cases
-    provinces = provinces[provinces.location != 'Nagaland#']
-    # Drop small location that in the same region as large location (but with same airport)
-    provinces = provinces[provinces.location != 'Puducherry']
-    provinces = provinces[provinces.location != 'Ladakh']
-    # Drop not found region
-    provinces = provinces[provinces.location != "Provence-Alpes-Côte d'Azur"]
+    # Drop duplicate location with typo(?)and no covid-19 cases,
+    # small location that in the same region as large location (but with same airport), not found regions
+    #
+    provinces = provinces[~provinces.location.isin(CFG.LOCATIONS_TO_DROP)]
+
     # Check that all provinces location are indeed in airports DataFrame
     # assert provinces.location.isin(airports['provinces']).all()
+
     # Resetting index before iterating on in
     provinces = provinces.reset_index(drop=True)
+
     # Convert every province to iso_region using airports['province']
+    loc = 'location'
+    prov = 'provinces'
     for i in range(len(provinces)):
-        provinces['location'].replace(provinces['location'][i],
-                                      airports.iso_region[airports['provinces'] == provinces.location[i]].min(),
-                                      inplace=True)
+        provinces[loc].replace(provinces[loc][i], airports.iso_region[airports[prov] == provinces.location[i]].min(),
+                               inplace=True)
+
     provinces = provinces.rename(columns={'location': 'iso_region'})
 
     return provinces
@@ -140,9 +134,9 @@ def main():
     #        get_travel_restrictions(airports)
 
     print(get_covid_data_countries(airports))
-    print(get_covid_data_regions(airports).columns)
-    print(get_covid_data_cities(airports).columns)
-    print(get_travel_restrictions(airports).columns)
+    print(get_covid_data_regions(airports))
+    print(get_covid_data_cities(airports))
+    print(get_travel_restrictions(airports))
 
 
 if __name__ == '__main__':
