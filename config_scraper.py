@@ -77,3 +77,37 @@ KEY_iata_code = 'iata_code'
 KEY_COORD = 'coordinates'
 KEY_longitude = 'longitude'
 KEY_latitude = 'latitude'
+
+
+# constants used for html parsing
+HTML_PARSER_STR = 'html.parser'
+FLIGHT_TRACKER_STR = 'h2'
+FLIGHT_NUMBER_STR = "h1"
+FLIGHT_STAT_STR = "p"
+AIRPORT_DEPT_STR = "h2"  # In a different context, it's also the flight tracker string (see above)
+FLIGHTS_EVENTS_STR = 'rowData'
+HTML_LINKS_STR1 = 'a'
+HTML_LINKS_STR2 = 'href'
+NO_FLIGHTS_MSG = 'No recent flights!'
+AIRPORT_CODE_CLASS = "airportCodeTitle"
+DATE_CLASS = "date"
+FLIGHT_CARRIER_STRING = "h1"
+FLIGHT_CARRIER_CLASS = "carrier-text-style"
+FLIGHT_CARRIER_SPACE_STR = " "
+THIRD_ITEM = 2
+FOURTH_ITEM = 3
+FLIGHT_NOT_IN_SYSTEM_STR = "h6"
+
+# Corona api scraper
+REGIONS_TO_CONVERT = {'DE-BR': 'Brandenburg', 'FR-E': 'Bretagne', 'FR-F': 'Centre-Val de Loire', 'CA-YT': 'Yukon',
+                          'FR-B': 'Nouvelle-Aquitaine', 'FR-D': 'Bourgogne-Franche-Comté', 'VI-U-A': 'Virgin Islands',
+                          'GU-U-A': 'Guam', 'PR-U-A': 'Puerto Rico', 'IN-MM': 'Maharashtra', 'IN-TG': 'Telengana',
+                          'FR-R': 'Pays de la Loire', 'FR-P': 'Normandie', 'IN-UL': 'Uttarakhand',
+                          'CH-GE': 'Auvergne-Rhône-Alpes', 'FR-O': 'Hauts-de-France', 'FR-J': 'Île-de-France',
+                          'IN-NL': 'Nagaland', 'FR-N': 'Occitanie', 'BR-RR': 'Roraima', 'FR-H': 'Corsica',
+                          'MP-U-A': 'Northern Mariana Islands', 'IN-TN': 'Tamil Nadu', 'IN-HR': 'Haryana',
+                          'FR-M': 'Grand Est', 'US-AK': 'Alaska', 'IN-JK': 'Jammu and Kashmir'}
+LOCATIONS_WITH_TYPOS = ['Nagaland#']
+SMALL_LOCATIONS = ['Puducherry', 'Ladakh']
+NOT_FOUND_REGION = ["Provence-Alpes-Côte d'Azur"]
+LOCATIONS_TO_DROP = LOCATIONS_WITH_TYPOS + SMALL_LOCATIONS + NOT_FOUND_REGION
