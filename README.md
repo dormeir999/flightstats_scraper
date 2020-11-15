@@ -1,6 +1,13 @@
-# README #
+# Flights stats scraper during Covid-19 #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+POC of the Project:
+https://docs.google.com/presentation/d/1sIZYruUzLq0ge70ACb_Ux8AyxM_FX4rozimYFW2nai4/edit?usp=sharing
+The final dashboard:
+![alt text](https://github.com/dormeir999/flightstats_scraper/blob/master/photos/1.png)
+Some visualizations:
+![alt text](https://github.com/dormeir999/flightstats_scraper/blob/master/photos/unnamed.png)
+![alt text](https://github.com/dormeir999/flightstats_scraper/blob/master/photos/unnamed%20(1).png)
+
 
 ### What is this repository for? ###
 
